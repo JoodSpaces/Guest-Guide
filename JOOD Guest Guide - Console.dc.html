@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160"><rect width="160" height="160" fill="#140E0D"/><circle cx="80" cy="80" r="46" fill="none" stroke="#FF6037" stroke-width="3"/><circle cx="80" cy="80" r="18" fill="#FF6037"/></svg></template>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400;500&family=Geist:wght@400;500&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#140E0D}
+*{box-sizing:border-box}
+a{color:#FF6037}
+a:hover{color:#FFF3EE}
+input{font:inherit;color:inherit}
+input::placeholder{color:rgba(245,244,237,0.32)}
+::selection{background:#FF6037;color:#140E0D}
+@keyframes jspin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes jpulse{0%,100%{opacity:0.55;transform:scale(0.94)}50%{opacity:1;transform:scale(1.04)}}
+@keyframes jbar{0%,100%{transform:scaleY(0.18)}50%{transform:scaleY(1)}}
+@keyframes jblink{0%,45%{opacity:1}46%,100%{opacity:0}}
+@keyframes jscan{from{transform:translateY(-100%)}to{transform:translateY(2400%)}}
+@keyframes jin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes jpop{0%{transform:scale(0.5);opacity:0}60%{transform:scale(1.2);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes jflicker{0%,100%{opacity:1}12%{opacity:0.62}14%{opacity:1}47%{opacity:0.78}49%{opacity:1}83%{opacity:0.55}85%{opacity:1}}
+@keyframes jsweep{from{transform:translateY(-140%)}to{transform:translateY(240%)}}
+</style>
+</helmet>
+<div style="position:relative;min-height:100vh;display:flex;flex-direction:column;background:radial-gradient(120% 90% at 50% -10%, #33201C 0%, #1B1211 45%, #140E0D 100%);color:#F5F4ED;font-family:'Geist Mono',ui-monospace,monospace;font-size:15px;line-height:1.6">
+
+  <sc-if value="{{ scanlines }}" hint-placeholder-val="{{ true }}">
+    <div style="position:fixed;inset:0;z-index:60;pointer-events:none;background:repeating-linear-gradient(to bottom, rgba(255,96,55,0.035) 0 1px, transparent 1px 4px)"></div>
+  </sc-if>
+
+  <header style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:16px clamp(18px,4vw,40px);border-bottom:1px solid rgba(255,96,55,0.18)">
+    <div style="display:flex;align-items:center;gap:14px">
+      <img src="assets/jood-logo-coral.png" alt="JOOD" style="height:30px;width:auto;display:block;flex:0 0 auto">
+      <span style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(245,244,237,0.5)">Guest Console</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:18px;font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(245,244,237,0.5)">
+      <span>{{ d.unitName }}</span>
+      <span style="display:inline-flex;align-items:center;gap:7px;color:#A0C9CB"><span style="width:7px;height:7px;border-radius:50%;background:#A0C9CB;animation:jpulse 2.4s ease-in-out infinite"></span>{{ statusWord }}</span>
+      <span>{{ clock }}</span>
+    </div>
+  </header>
+
+  <main style="flex:1;width:100%;max-width:1180px;margin:0 auto;padding:clamp(22px,3.5vw,44px) clamp(18px,4vw,40px) 20px;display:flex;flex-wrap:wrap;gap:clamp(24px,4vw,52px);align-items:flex-start">
+
+    <aside style="flex:1 1 268px;display:flex;flex-direction:column;align-items:center;gap:26px">
+      <div style="position:relative;width:100%;max-width:248px;aspect-ratio:1;display:grid;place-items:center;align-self:center">
+        <div style="position:absolute;inset:0;border-radius:50%;border:1px solid rgba(255,96,55,0.2)"></div>
+        <div style="position:absolute;inset:6px;border-radius:50%;border:1px dashed rgba(255,96,55,0.38);animation:jspin 22s linear infinite"></div>
+        <div style="position:absolute;inset:26px;border-radius:50%;border:1px solid rgba(160,201,203,0.18);border-top:1px solid #A0C9CB;animation:jspin {{ ringSpeed }} linear infinite reverse"></div>
+        <div style="position:absolute;inset:46px;border-radius:50%;border:1px solid rgba(255,96,55,0.22);border-left:1px solid #FF6037;animation:jspin 9s linear infinite"></div>
+        <div style="position:absolute;inset:64px;border-radius:50%;background:radial-gradient(circle, rgba(255,96,55,0.5) 0%, rgba(255,96,55,0.12) 55%, transparent 72%);animation:jpulse 3.2s ease-in-out infinite"></div>
+        <div style="position:relative;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px">
+          <div style="position:relative;display:grid;place-items:center;padding:2px 4px;animation:jflicker 6s steps(1,end) infinite">
+            <img src="assets/jood-logo-coral.png" alt="JOOD" style="display:block;width:88px;height:auto;filter:brightness(1.35) drop-shadow(0 0 10px rgba(255,96,55,0.75)) drop-shadow(0 0 26px rgba(255,96,55,0.35))">
+            <div style="position:absolute;inset:-2px;pointer-events:none;background:repeating-linear-gradient(to bottom, rgba(20,14,13,0.55) 0 1px, transparent 1px 3px)"></div>
+            <div style="position:absolute;inset:-2px;overflow:hidden;pointer-events:none">
+              <div style="height:22%;width:100%;background:linear-gradient(to bottom, transparent, rgba(160,201,203,0.35), transparent);animation:jsweep 3.4s linear infinite"></div>
+            </div>
+          </div>
+          <span style="display:inline-flex;align-items:center;gap:7px;font-size:9.5px;letter-spacing:0.24em;text-transform:uppercase;color:#FF6037">
+            <span style="color:rgba(160,201,203,0.9)">{{ coreGlyph }}</span>{{ statusWord }}
+          </span>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:flex-end;justify-content:center;gap:4px;height:34px;transform:scaleY({{ waveY }});transition:transform 0.35s ease">
+        <sc-for list="{{ bars }}" as="b" hint-placeholder-count="16">
+          <span style="width:3px;height:100%;border-radius:2px;background:{{ b.color }};transform-origin:bottom;animation:jbar {{ b.dur }} ease-in-out infinite;animation-delay:{{ b.delay }}"></span>
+        </sc-for>
+      </div>
+
+      <div style="align-self:stretch;display:flex;flex-direction:column;border-top:1px solid rgba(255,96,55,0.18)">
+        <sc-for list="{{ readouts }}" as="ro" hint-placeholder-count="4">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:11px 0;border-bottom:1px solid rgba(245,244,237,0.08)">
+            <span style="font-size:9.5px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(245,244,237,0.42)">{{ ro.k }}</span>
+            <span style="font-size:13px;color:{{ ro.color }}">{{ ro.v }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ showLog }}" hint-placeholder-val="{{ true }}">
+        <div style="align-self:stretch;display:flex;flex-direction:column;gap:8px">
+          <span style="font-size:9.5px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(245,244,237,0.35)">Session log</span>
+          <sc-for list="{{ log }}" as="lg" hint-placeholder-count="2">
+            <span style="font-size:11.5px;color:rgba(160,201,203,0.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ lg.line }}</span>
+          </sc-for>
+        </div>
+      </sc-if>
+    </aside>
+
+    <section style="flex:1 1 440px;min-width:0;display:flex;flex-direction:column;gap:22px">
+
+      <sc-if value="{{ booting }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:9px;min-height:300px;padding-top:8px">
+          <sc-for list="{{ bootLines }}" as="bl" hint-placeholder-count="4">
+            <div style="display:flex;gap:12px;align-items:baseline;animation:jin 0.4s ease both;font-size:13px;color:rgba(245,244,237,0.7)">
+              <span style="color:#FF6037">›</span><span>{{ bl.text }}</span><span style="color:#A0C9CB;font-size:11px">{{ bl.ok }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:20px;min-height:300px">
+          <div style="display:flex;align-items:center;gap:12px;font-size:9.5px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(245,244,237,0.4)">
+            <span style="color:#FF6037">{{ answerTag }}</span>
+            <span style="flex:1;height:1px;background:rgba(255,96,55,0.18)"></span>
+            <span>{{ answerMeta }}</span>
+          </div>
+
+          <h1 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(34px,5.4vw,58px);line-height:1.05;letter-spacing:-0.01em;margin:0;color:#F5F4ED;text-wrap:pretty">{{ typedTitle }}<span style="color:#FF6037;animation:jblink 1s step-end infinite">_</span></h1>
+
+          <div style="display:flex;flex-direction:column;gap:12px;max-width:640px">
+            <sc-for list="{{ lines }}" as="ln" hint-placeholder-count="3">
+              <div style="display:flex;gap:12px;align-items:baseline;animation:jin 0.45s cubic-bezier(0.16,1,0.3,1) both;font-family:'Geist',sans-serif;font-size:16px;line-height:1.6;color:rgba(245,244,237,0.82)">
+                <span style="color:rgba(255,96,55,0.75);font-family:'Geist Mono',monospace;font-size:12px">{{ ln.n }}</span>
+                <span>{{ ln.text }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <sc-if value="{{ hasData }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:4px">
+              <sc-for list="{{ data }}" as="dp" hint-placeholder-count="2">
+                <button onClick="{{ dp.onCopy }}" style="display:flex;flex-direction:column;gap:6px;align-items:flex-start;background:rgba(255,96,55,0.07);border:1px solid rgba(255,96,55,0.32);border-radius:4px;padding:12px 16px;cursor:pointer;color:#F5F4ED;font:inherit;text-align:left;transition:background 0.2s ease,border-color 0.2s ease" style-hover="background:rgba(255,96,55,0.16);border-color:#FF6037">
+                  <span style="font-size:9.5px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(160,201,203,0.85)">{{ dp.k }}</span>
+                  <span style="font-size:20px;letter-spacing:0.02em">{{ dp.v }}</span>
+                  <span style="display:inline-flex;align-items:center;gap:5px;font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;color:#FF6037">
+                    <sc-if value="{{ dp.flash }}" hint-placeholder-val="{{ false }}"><span style="display:inline-block;animation:jpop 0.4s ease">✓</span></sc-if>
+                    <span>{{ dp.label }}</span>
+                  </span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ hasActions }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:2px">
+              <sc-for list="{{ actions }}" as="ac" hint-placeholder-count="1">
+                <a href="{{ ac.href }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;background:#FF6037;color:#140E0D;text-decoration:none;font-size:12px;letter-spacing:0.1em;text-transform:uppercase" style-hover="background:#F5F4ED;color:#140E0D">{{ ac.label }} →</a>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ hasFollow }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px">
+              <span style="font-size:9.5px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(245,244,237,0.35)">Next</span>
+              <sc-for list="{{ follow }}" as="fu" hint-placeholder-count="2">
+                <button onClick="{{ fu.onAsk }}" style="background:none;border:1px solid rgba(160,201,203,0.35);border-radius:999px;color:#A0C9CB;font:inherit;font-size:11.5px;padding:6px 13px;cursor:pointer;transition:border-color 0.2s ease,color 0.2s ease" style-hover="border-color:#A0C9CB;color:#F5F4ED">{{ fu.label }}</button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+    </section>
+  </main>
+
+  <footer style="position:sticky;bottom:0;z-index:50;background:linear-gradient(to top, #140E0D 55%, rgba(20,14,13,0.85) 100%);border-top:1px solid rgba(255,96,55,0.18);padding:14px clamp(18px,4vw,40px) 18px">
+    <div style="max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <sc-for list="{{ chips }}" as="ch" hint-placeholder-count="8">
+          <button onClick="{{ ch.onAsk }}" style="background:rgba(245,244,237,0.04);border:1px solid rgba(245,244,237,0.16);border-radius:999px;color:rgba(245,244,237,0.78);font:inherit;font-size:11.5px;letter-spacing:0.06em;padding:7px 14px;cursor:pointer;transition:border-color 0.2s ease,color 0.2s ease,background 0.2s ease" style-hover="border-color:#FF6037;color:#FF6037;background:rgba(255,96,55,0.08)">{{ ch.label }}</button>
+        </sc-for>
+      </div>
+      <form onSubmit="{{ onSubmit }}" style="display:flex;align-items:center;gap:12px;border:1px solid rgba(255,96,55,0.4);border-radius:6px;background:rgba(255,96,55,0.05);padding:12px 14px">
+        <span style="color:#FF6037;font-size:17px">›</span>
+        <input ref="{{ inputRef }}" value="{{ query }}" onChange="{{ onChange }}" placeholder="{{ placeholder }}" style="flex:1;min-width:0;background:none;border:none;outline:none;font-size:15px;letter-spacing:0.01em">
+        <span style="font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(245,244,237,0.3)">{{ hintKey }}</span>
+        <button type="submit" style="background:#FF6037;border:none;border-radius:4px;color:#140E0D;font:inherit;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;padding:9px 16px;cursor:pointer" style-hover="background:#F5F4ED">Ask</button>
+      </form>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;bootSequence&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Console&quot;},&quot;showSessionLog&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Console&quot;},&quot;scanlines&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Console&quot;}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.d = {
+      unitName: 'Stone B-07',
+      floor: 'Building B · 3rd',
+      checkIn: '3:00 PM',
+      checkOut: '12:00 PM',
+      wifiSsid: 'JOOD_B07',
+      wifiPass: 'ahlan-2026',
+      doorCode: '4821#',
+      whatsapp: '+20 100 123 4567',
+      security: '+20 100 000 0000'
+    };
+    const unit = (typeof window !== 'undefined' && window.__UNIT_DATA__) || null;
+    if (unit) this.d = Object.assign({}, this.d, unit);
+    this.wa = 'https://wa.me/' + (this.d.whatsapp || '').replace(/[^\d]/g, '');
+
+    this.state = {
+      phase: (this.props.bootSequence ?? true) ? 'boot' : 'ready',
+      bootStep: 0,
+      status: 'idle',
+      query: '',
+      answer: null,
+      typedTitle: '',
+      shown: 0,
+      log: [],
+      flash: '',
+      clock: this.now(),
+      placeholderIdx: 0,
+      history: [],
+      histPos: -1
+    };
+
+    this.boot = [
+      'jood.os v2.6 — hospitality core',
+      'linking unit ' + this.d.unitName.toUpperCase(),
+      'network ' + this.d.wifiSsid + ' broadcasting',
+      'concierge channel open'
+    ];
+
+    this.hints = [
+      'ask me anything — try "wifi"',
+      'try "where do I get coffee"',
+      'try "how does the AC work"',
+      'try "check out"',
+      'try "is there a pool"'
+    ];
+
+    this.intents = this.buildIntents();
+  }
+
+  now() {
+    return new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  mapUrl(q) { return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q); }
+
+  buildIntents() {
+    const d = this.d;
+    return [
+      { id: 'wifi', keys: ['wifi', 'wi-fi', 'internet', 'password', 'network', 'online'], glyph: '≋', title: 'You\u2019re online in ten seconds.',
+        lines: ['Network and password below — tap either to copy it to your clipboard.', 'Signal reaches the balcony, but weakens by the pool. There is compound guest WiFi down there.'],
+        data: [{ k: 'Network', v: d.wifiSsid }, { k: 'Password', v: d.wifiPass }], follow: ['door code', 'tv'] },
+      { id: 'access', keys: ['door', 'code', 'key', 'lock', 'get in', 'entry', 'access', 'floor', 'where is the apartment'], glyph: '⌗', title: 'The door opens on a code.',
+        lines: ['Press the digits, then #. It clicks twice — that\u2019s open.', 'You\u2019re in ' + d.floor + '. The same code works at the clubhouse gym.', 'Compound wristbands are in the drawer beside the front door.'],
+        data: [{ k: 'Door code', v: d.doorCode }], follow: ['wifi', 'pool'] },
+      { id: 'times', keys: ['check in', 'checkin', 'arrive', 'arrival', 'what time', 'early', 'late'], glyph: '◷', title: 'Arrive after three, leave before twelve.',
+        lines: ['Check-in from ' + d.checkIn + ', check-out by ' + d.checkOut + '.', 'Earlier arrival or a later exit is usually possible — message us and we\u2019ll check the calendar.'],
+        actions: [{ label: 'Ask about my times', href: this.wa }], follow: ['check out', 'contact'] },
+      { id: 'ac', keys: ['ac', 'a/c', 'air con', 'air conditioning', 'cold', 'hot', 'temperature', 'aircon'], glyph: '❄', title: 'Every room cools itself.',
+        lines: ['Each room has its own split unit; remotes live on the coffee table.', '23–24°C is the sweet spot. Below that they tend to drip.', 'Please switch them off when you head out — New Cairo summers make them work hard.'],
+        follow: ['water heater', 'washing machine'] },
+      { id: 'water', keys: ['water heater', 'hot water', 'shower', 'boiler', 'drinking water'], glyph: '≈', title: 'Hot water is already on.',
+        lines: ['The bathroom switch with the red light controls the heater — leave it on and hot water arrives within minutes.', 'Tap water is for cooking and washing; drink the bottled. Two bottles in the fridge are on us.'],
+        follow: ['ac', 'groceries'] },
+      { id: 'laundry', keys: ['washing', 'laundry', 'machine', 'clothes', 'detergent', 'iron'], glyph: '◍', title: 'The washer is in the kitchen.',
+        lines: ['Detergent is under the sink. Program 3 — 30°C, one hour — handles almost everything.', 'Drying rack is on the balcony, and there\u2019s an iron in the bedroom wardrobe.'],
+        follow: ['ac', 'house rules'] },
+      { id: 'tv', keys: ['tv', 'netflix', 'stream', 'youtube', 'television', 'remote'], glyph: '▣', title: 'Signed in and ready.',
+        lines: ['Netflix and YouTube are on our house profile — watch away.', 'Log into your own accounts freely; just log out again before you leave.'],
+        follow: ['wifi', 'house rules'] },
+      { id: 'coffee', keys: ['coffee', 'cafe', 'café', 'espresso', 'latte', 'breakfast spot'], glyph: '◉', title: 'Two coffees worth the drive.',
+        lines: ['Espresso Lab — Point 90 Mall, 10 minutes. Serious specialty coffee; get the Spanish latte.', '30 North — Downtown Katameya, 12 minutes. Egypt\u2019s homegrown chain, excellent iced drinks.'],
+        actions: [{ label: 'Espresso Lab', href: this.mapUrl('Espresso Lab Point 90 Mall New Cairo') }, { label: '30 North', href: this.mapUrl('30 North Downtown Katameya New Cairo') }],
+        follow: ['food', 'neighbourhood'] },
+      { id: 'food', keys: ['eat', 'food', 'restaurant', 'dinner', 'lunch', 'hungry', 'delivery', 'order'], glyph: '◈', title: 'Where we\u2019d send a friend.',
+        lines: ['Ovio — Point 90 Mall, 10 minutes. Breakfast is the move: sunny terrace, proper bread.', 'Zooba — Cairo Festival City, 15 minutes. Egyptian street food done beautifully; taameya and hawawshi.', 'For delivery, everything in New Cairo is on Talabat and Elmenus.'],
+        actions: [{ label: 'Ovio', href: this.mapUrl('Ovio Point 90 New Cairo') }, { label: 'Zooba', href: this.mapUrl('Zooba Cairo Festival City') }],
+        follow: ['coffee', 'groceries'] },
+      { id: 'groceries', keys: ['grocery', 'groceries', 'supermarket', 'market', 'shop', 'seoudi'], glyph: '⊞', title: 'Five minutes to a full supermarket.',
+        lines: ['Seoudi Market — 90th Street, 5 minutes. They deliver; message us for the number.', 'Gourmet Egypt — Downtown Katameya, 12 minutes. Good cheese, fresh fish, imported everything.'],
+        actions: [{ label: 'Seoudi Market', href: this.mapUrl('Seoudi Market 90th Street New Cairo') }],
+        follow: ['pharmacy', 'food'] },
+      { id: 'pharmacy', keys: ['pharmacy', 'medicine', 'chemist', 'sick', 'doctor', 'paracetamol'], glyph: '✚', title: 'A pharmacy is always open.',
+        lines: ['El Ezaby — 90th Street, 5 minutes, open around the clock and delivering. Hotline 19600, English spoken.', 'Seif Pharmacy — inside Point 90 Mall. Hotline 19199 if you\u2019d rather not go out.'],
+        actions: [{ label: 'El Ezaby', href: this.mapUrl('El Ezaby Pharmacy 90th Street New Cairo') }],
+        follow: ['emergency', 'contact'] },
+      { id: 'pool', keys: ['pool', 'gym', 'swim', 'compound', 'facilities', 'garden', 'kids'], glyph: '◎', title: 'The compound is yours too.',
+        lines: ['Pool runs 8am–8pm. Wristbands from the front-door drawer get you in; towels are in your wardrobe.', 'The gym is by the clubhouse — your door code works there.', 'The central lawn is lovely after sunset, with a kids\u2019 play area beside it.'],
+        follow: ['neighbourhood', 'house rules'] },
+      { id: 'transport', keys: ['uber', 'careem', 'taxi', 'car', 'drive', 'airport', 'transport', 'get around', 'rent'], glyph: '⇢', title: 'Set your pickup at Gate 2.',
+        lines: ['Uber and Careem both work well here — Gate 2 is the easiest point for drivers to find.', 'Downtown is 30–45 minutes depending on traffic. The airport is about 40.', 'Prefer to drive? We can have a rental delivered to the compound with a day\u2019s notice.'],
+        actions: [{ label: 'Gate 2 on maps', href: this.mapUrl('Stone Residence New Cairo Gate 2') }],
+        follow: ['neighbourhood', 'contact'] },
+      { id: 'hood', keys: ['neighbourhood', 'neighborhood', 'area', 'around', 'nearby', 'district', 'pyramids', 'nile', 'cairo'], glyph: '◍', title: 'Quiet heart of the Fifth Settlement.',
+        lines: ['Leafy streets, wide pavements, none of downtown\u2019s noise. Point 90 Mall, the 90th Street strip and an army of cafés are inside ten minutes.', 'Downtown Katameya is the local evening favourite — open-air, easy, full of restaurants.', 'For the real Cairo — the Nile, Khan el-Khalili, the pyramids — count forty minutes by car and go early.'],
+        follow: ['coffee', 'transport'] },
+      { id: 'rules', keys: ['rules', 'smoking', 'smoke', 'noise', 'party', 'guests', 'quiet', 'pets'], glyph: '◇', title: 'Four small asks.',
+        lines: ['Smoking happens on the balcony, not indoors.', 'The compound asks for quiet after 11pm — sound carries here.', 'Gatherings are welcome; parties aren\u2019t. If your plans grow, tell us first.', 'Treat it like your own place — because for now, it is.'],
+        follow: ['check out', 'contact'] },
+      { id: 'checkout', keys: ['check out', 'checkout', 'leave', 'leaving', 'departure', 'luggage', 'keys back'], glyph: '⇥', title: 'Check out by ' + d.checkOut + '.',
+        lines: ['Switch off the ACs and lights on your way out.', 'Leave wristbands and remotes on the dining table.', 'Pull the door closed behind you — it locks itself.', 'Send us a message when you head out, so we know you\u2019re safely away.'],
+        actions: [{ label: 'Tell us we\u2019re off', href: this.wa }], follow: ['times', 'contact'] },
+      { id: 'emergency', keys: ['emergency', 'police', 'ambulance', 'fire', 'security', 'help me', 'urgent'], glyph: '!', title: 'Numbers that answer immediately.',
+        lines: ['Police 122 · Ambulance 123 · Fire 180.', 'Compound security: ' + d.security + ' — fastest for anything at the gate or in the building.', 'Then message us. Any hour, any problem.'],
+        actions: [{ label: 'Call security', href: 'tel:' + (d.security || '').replace(/[^\d+]/g, '') }, { label: 'Message us', href: this.wa }],
+        follow: ['pharmacy', 'contact'] },
+      { id: 'contact', keys: ['contact', 'whatsapp', 'human', 'host', 'call', 'message', 'talk', 'someone'], glyph: '◆', title: 'A real person answers.',
+        lines: ['9am – 11pm, every day of your stay — and always for anything urgent.', 'A dripping AC, a restaurant booking, directions, something odd at 11pm. That\u2019s the whole point of JOOD.'],
+        data: [{ k: 'WhatsApp', v: d.whatsapp }], actions: [{ label: 'Open WhatsApp', href: this.wa }], follow: ['emergency', 'help'] },
+      { id: 'welcome', keys: ['hi', 'hello', 'hey', 'ahlan', 'salam', 'welcome', 'who are you', 'jood'], glyph: '✦', title: 'Ahlan wa sahlan.',
+        lines: ['I\u2019m the guide to this apartment — codes, appliances, the coffee, and the one number that always answers.', 'Ask in plain words, or tap a suggestion below.', 'This is one of our own units, run like a boutique hotel. That\u2019s JOOD.'],
+        follow: ['wifi', 'door code', 'coffee'] },
+      { id: 'help', keys: ['help', 'what can you do', 'commands', 'menu', 'options', 'list'], glyph: '?', title: 'Things I know cold.',
+        lines: ['Access — wifi, door code, floor, arrival and departure times.', 'The apartment — AC, water heater, washer, TV.', 'Outside — coffee, food, groceries, pharmacy, pool, getting around.', 'Everything else — house notes, check-out, emergencies, and us.'],
+        follow: ['wifi', 'food', 'contact'] }
+    ];
+  }
+
+  resolve(qRaw) {
+    const q = (qRaw || '').toLowerCase().trim();
+    if (!q) return null;
+    let best = null, bestScore = 0;
+    this.intents.forEach((it) => {
+      let score = 0;
+      it.keys.forEach((k) => { if (q.indexOf(k) !== -1) score = Math.max(score, k.length + (q === k ? 10 : 0)); });
+      if (score > bestScore) { bestScore = score; best = it; }
+    });
+    if (best) return best;
+    return {
+      id: 'unknown', glyph: '~', title: 'That one I\u2019d rather not guess at.',
+      lines: ['I didn\u2019t catch it — try a word like wifi, door, coffee, pool, or check-out.', 'Or ask us directly; a real person answers within minutes.'],
+      actions: [{ label: 'Message a human', href: this.wa }], follow: ['help', 'contact']
+    };
+  }
+
+  componentDidMount() {
+    this._clock = setInterval(() => this.setState({ clock: this.now() }), 20000);
+    this._ph = setInterval(() => this.setState(s => ({ placeholderIdx: (s.placeholderIdx + 1) % this.hints.length })), 4200);
+    if (this.state.phase === 'boot') {
+      this._bt = setInterval(() => {
+        this.setState(s => {
+          const next = s.bootStep + 1;
+          if (next > this.boot.length) { clearInterval(this._bt); this.finishBoot(); return { bootStep: this.boot.length }; }
+          return { bootStep: next };
+        });
+      }, 420);
+    } else {
+      this.deliver(this.resolve('hi'), true);
+    }
+    this._keys = (e) => {
+      if (e.key === '/' && document.activeElement !== this._input) { e.preventDefault(); this.focus(); }
+      if (document.activeElement !== this._input) return;
+      if (e.key === 'ArrowUp' && this.state.history.length) {
+        e.preventDefault();
+        const pos = Math.min(this.state.history.length - 1, this.state.histPos + 1);
+        this.setState({ histPos: pos, query: this.state.history[pos] });
+      }
+      if (e.key === 'ArrowDown' && this.state.histPos > -1) {
+        e.preventDefault();
+        const pos = this.state.histPos - 1;
+        this.setState({ histPos: pos, query: pos < 0 ? '' : this.state.history[pos] });
+      }
+    };
+    window.addEventListener('keydown', this._keys);
+  }
+
+  finishBoot() {
+    setTimeout(() => {
+      this.setState({ phase: 'ready' });
+      this.deliver(this.resolve('hi'), true);
+      this.focus();
+    }, 480);
+  }
+
+  componentWillUnmount() {
+    [this._clock, this._ph, this._bt, this._ti, this._li].forEach((h) => { clearInterval(h); });
+    clearTimeout(this._think); clearTimeout(this._flashT);
+    if (this._keys) window.removeEventListener('keydown', this._keys);
+  }
+
+  focus() { if (this._input) try { this._input.focus(); } catch (e) {} }
+
+  ask(qRaw) {
+    const q = (qRaw || '').trim();
+    if (!q) return;
+    clearTimeout(this._think);
+    clearInterval(this._ti); clearInterval(this._li);
+    this.setState(s => ({
+      status: 'thinking', query: '', typedTitle: '', shown: 0, answer: null, histPos: -1,
+      history: [q].concat(s.history).slice(0, 20),
+      log: [{ line: '› ' + q }].concat(s.log).slice(0, 5)
+    }));
+    this._think = setTimeout(() => this.deliver(this.resolve(q), false), 560);
+  }
+
+  deliver(answer, quiet) {
+    this.setState({ answer, status: 'speaking', typedTitle: '', shown: 0 });
+    let i = 0;
+    const title = answer.title;
+    clearInterval(this._ti);
+    this._ti = setInterval(() => {
+      i++;
+      this.setState({ typedTitle: title.slice(0, i) });
+      if (i >= title.length) {
+        clearInterval(this._ti);
+        let k = 0;
+        clearInterval(this._li);
+        this._li = setInterval(() => {
+          k++;
+          this.setState({ shown: k });
+          if (k >= (answer.lines || []).length) { clearInterval(this._li); this.setState({ status: 'idle' }); }
+        }, 150);
+      }
+    }, quiet ? 26 : 20);
+  }
+
+  copy(key, value) {
+    try { navigator.clipboard.writeText(value); } catch (e) {}
+    this.setState({ flash: key });
+    clearTimeout(this._flashT);
+    this._flashT = setTimeout(() => this.setState({ flash: '' }), 1600);
+  }
+
+  renderVals() {
+    const s = this.state;
+    const a = s.answer;
+    const thinking = s.status === 'thinking';
+    const speaking = s.status === 'speaking';
+
+    const bars = [];
+    for (let i = 0; i < 18; i++) {
+      bars.push({
+        color: i % 3 === 0 ? 'rgba(160,201,203,0.85)' : 'rgba(255,96,55,0.8)',
+        dur: (thinking ? 0.5 : speaking ? 0.8 : 2.2) + (i % 4) * 0.12 + 's',
+        delay: (i * 0.06).toFixed(2) + 's'
+      });
+    }
+
+    const lines = ((a && a.lines) || []).slice(0, s.shown).map((text, i) => ({ text, n: String(i + 1).padStart(2, '0') }));
+    const data = ((a && a.data) || []).map((p) => ({
+      k: p.k, v: p.v,
+      flash: s.flash === a.id + p.k,
+      label: s.flash === a.id + p.k ? 'copied' : 'tap to copy',
+      onCopy: () => this.copy(a.id + p.k, p.v)
+    }));
+    const follow = ((a && a.follow) || []).map((label) => ({ label, onAsk: () => this.ask(label) }));
+
+    return {
+      d: this.d,
+      booting: s.phase === 'boot',
+      ready: s.phase === 'ready',
+      bootLines: this.boot.slice(0, s.bootStep).map((text, i) => ({ text, ok: i < s.bootStep - 1 || s.bootStep > this.boot.length ? 'ok' : '…' })),
+      statusWord: thinking ? 'thinking' : speaking ? 'speaking' : s.phase === 'boot' ? 'booting' : 'listening',
+      coreGlyph: thinking ? '···' : (a && a.glyph) || '✦',
+      ringSpeed: thinking ? '1.6s' : '7s',
+      waveY: thinking ? 1 : speaking ? 0.7 : 0.34,
+      bars,
+      clock: s.clock,
+      readouts: [
+        { k: 'Unit', v: this.d.unitName, color: '#F5F4ED' },
+        { k: 'Floor', v: this.d.floor, color: 'rgba(245,244,237,0.75)' },
+        { k: 'Check-out', v: this.d.checkOut, color: '#FF6037' },
+        { k: 'Host', v: '9am – 11pm', color: '#A0C9CB' }
+      ],
+      showLog: (this.props.showSessionLog ?? true) && s.log.length > 0,
+      log: s.log,
+      scanlines: this.props.scanlines ?? true,
+      answerTag: a ? 'response · ' + a.id : 'standby',
+      answerMeta: thinking ? 'parsing…' : 'jood.os',
+      typedTitle: s.typedTitle,
+      lines,
+      data, hasData: data.length > 0,
+      actions: (a && a.actions) || [], hasActions: !!(a && a.actions && a.actions.length && s.shown >= (a.lines || []).length),
+      follow, hasFollow: follow.length > 0 && s.shown >= ((a && a.lines) || []).length,
+      chips: ['wifi', 'door code', 'check out', 'coffee', 'food', 'pool & gym', 'house rules', 'help'].map((label) => ({ label, onAsk: () => this.ask(label) })),
+      query: s.query,
+      placeholder: this.hints[s.placeholderIdx],
+      hintKey: 'press /',
+      inputRef: (el) => { this._input = el; },
+      onChange: (e) => this.setState({ query: e.target.value }),
+      onSubmit: (e) => { e.preventDefault(); this.ask(this.state.query); }
+    };
+  }
+}
+</script>
+</body>
+</html>

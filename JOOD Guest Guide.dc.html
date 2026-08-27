@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;1,400&family=Jost:wght@400;500;600&family=Amiri:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#F5F4ED}
+*{box-sizing:border-box}
+a{color:inherit}
+input{font:inherit}
+::selection{background:#FF6037;color:#F5F4ED}
+</style>
+</helmet>
+<div dir="{{ dir }}" style="min-height:100vh;background:#F5F4ED;color:#351E1C;font-family:'Lora','Amiri',serif;font-size:17px;line-height:1.7">
+<div style="max-width:680px;margin:0 auto;background:#F5F4ED">
+
+  <!-- ============ HERO ============ -->
+  <header data-screen-label="Hero" style="background:#351E1C;color:#F5F4ED;padding:56px 32px 0;text-align:center">
+    <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:12px;letter-spacing:0.28em;text-transform:uppercase;color:#A0C9CB">{{ t.heroKicker }}</div>
+    <div style="font-family:'Playfair Display','Amiri',serif;font-weight:700;font-size:72px;line-height:1;margin:18px 0 10px;letter-spacing:0.02em">JOOD</div>
+    <div style="font-family:'Playfair Display','Amiri',serif;font-style:italic;font-size:22px;color:#FF6037">{{ t.heroTagline }}</div>
+    <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(245,244,237,0.6);margin:14px 0 34px">{{ t.heroLoc }}</div>
+    <div style="margin:0 -32px">
+      <sc-if value="{{ hasHero }}" hint-placeholder-val="{{ false }}">{{ heroImg }}</sc-if>
+      <sc-if value="{{ noHero }}" hint-placeholder-val="{{ true }}">
+        <div style="height:280px;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(45deg,#3f2624,#3f2624 10px,#351E1C 10px,#351E1C 20px)">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#A0C9CB;background:#351E1C;padding:6px 12px;border:1px solid rgba(160,201,203,0.4)">{{ t.heroPlaceholder }}</span>
+        </div>
+      </sc-if>
+    </div>
+  </header>
+
+  <!-- ============ WELCOME ============ -->
+  <section data-screen-label="Welcome" style="padding:60px 32px 52px">
+    <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:12px;letter-spacing:0.24em;text-transform:uppercase;color:#FF6037;margin-bottom:12px">{{ t.welcomeKicker }}</div>
+    <h1 style="font-family:'Playfair Display','Amiri',serif;font-weight:600;font-size:40px;line-height:1.15;margin:0 0 22px">{{ t.welcomeTitle }}</h1>
+    <p style="margin:0 0 16px">{{ t.welcome1 }}</p>
+    <p style="margin:0 0 22px">{{ t.welcome2 }}</p>
+    <p style="margin:0;font-family:'Playfair Display','Amiri',serif;font-style:italic;font-size:19px;color:#733635">{{ t.welcomeSign }}</p>
+  </section>
+
+  <!-- ============ UNIT INFO ============ -->
+  <section data-screen-label="Unit info" style="background:#ECECDC;padding:52px 32px">
+    <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:12px;letter-spacing:0.24em;text-transform:uppercase;color:#FF6037;margin-bottom:12px">{{ t.unitKicker }}</div>
+    <h2 style="font-family:'Playfair Display','Amiri',serif;font-weight:600;font-size:32px;margin:0 0 26px">{{ t.unitTitle }}</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;background:rgba(53,30,28,0.15);border:1px solid rgba(53,30,28,0.15)">
+      <div style="background:#F5F4ED;padding:18px 20px">
+        <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#733635;margin-bottom:4px">{{ t.lblUnit }}</div>
+        <div style="font-family:'Playfair Display','Amiri',serif;font-size:22px;font-weight:600">{{ d.unitName }}</div>
+      </div>
+      <div style="background:#F5F4ED;padding:18px 20px">
+        <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#733635;margin-bottom:4px">{{ t.lblFloor }}</div>
+        <div style="font-family:'Playfair Display','Amiri',serif;font-size:22px;font-weight:600">{{ d.floor }}</div>
+      </div>
+      <div style="background:#F5F4ED;padding:18px 20px">
+        <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#733635;margin-bottom:4px">{{ t.lblCheckIn }}</div>
+        <div style="font-family:'Playfair Display','Amiri',serif;font-size:22px;font-weight:600">{{ d.checkIn }}</div>
+      </div>
+      <div style="background:#F5F4ED;padding:18px 20px">
+        <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#733635;margin-bottom:4px">{{ t.lblCheckOut }}</div>
+        <div style="font-family:'Playfair Display','Amiri',serif;font-size:22px;font-weight:600">{{ d.checkOut }}</div>
+      </div>
+    </div>
+
+    <!-- WiFi + door code card -->
+    <div style="margin-top:22px;background:#351E1C;color:#F5F4ED;padding:28px 24px">
+      <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+        <div style="flex:1;min-width:220px;display:flex;flex-direction:column;gap:18px">
+          <div>
+            <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#A0C9CB;margin-bottom:4px">{{ t.lblWifi }}</div>
+            <div style="font-family:ui-monospace,Menlo,monospace;font-size:18px">{{ d.wifiSsid }}</div>
+          </div>
+          <div>
+            <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#A0C9CB;margin-bottom:4px">{{ t.lblPass }}</div>
+            <button onClick="{{ copyWifi }}" style="display:inline-flex;align-items:center;gap:10px;background:none;border:1px dashed rgba(160,201,203,0.5);color:#F5F4ED;padding:8px 12px;cursor:pointer;font-family:ui-monospace,Menlo,monospace;font-size:18px" style-hover="border-color:#FF6037">
+              <span>{{ d.wifiPass }}</span>
+              <span style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#FF6037">{{ wifiCopyLabel }}</span>
+            </button>
+          </div>
+          <div>
+            <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#A0C9CB;margin-bottom:4px">{{ t.lblDoor }}</div>
+            <button onClick="{{ copyCode }}" style="display:inline-flex;align-items:center;gap:10px;background:none;border:1px dashed rgba(160,201,203,0.5);color:#F5F4ED;padding:8px 12px;cursor:pointer;font-family:ui-monospace,Menlo,monospace;font-size:18px" style-hover="border-color:#FF6037">
+              <span>{{ d.doorCode }}</span>
+              <span style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#FF6037">{{ codeCopyLabel }}</span>
+            </button>
+          </div>
+        </div>
+        <div style="text-align:center">
+          <sc-if value="{{ qrImg }}" hint-placeholder-val="{{ false }}">{{ qrImg }}</sc-if>
+          <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:11px;letter-spacing:0.08em;color:#A0C9CB;margin-top:8px;max-width:166px">{{ t.qrCaption }}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ARRIVAL CHECKLIST ============ -->
+  <section data-screen-label="Arrival checklist" style="padding:52px 32px">
+    <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:12px;letter-spacing:0.24em;text-transform:uppercase;color:#FF6037;margin-bottom:12px">{{ t.checklistKicker }}</div>
+    <h2 style="font-family:'Playfair Display','Amiri',serif;font-weight:600;font-size:32px;margin:0 0 24px">{{ t.checklistTitle }}</h2>
+    <div style="display:flex;flex-direction:column">
+      <sc-for list="{{ checklist }}" as="c" hint-placeholder-count="5">
+        <div style="display:flex;gap:18px;align-items:baseline;padding:16px 0;border-bottom:1px solid rgba(53,30,28,0.12)">
+          <span style="font-family:'Playfair Display','Amiri',serif;font-style:italic;font-size:22px;color:#FF6037;min-width:26px">{{ c.n }}</span>
+          <span>{{ c.text }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- ============ HOUSE RULES ============ -->
+  <section data-screen-label="House rules" style="background:#733635;color:#F5F4ED;padding:52px 32px">
+    <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:12px;letter-spacing:0.24em;text-transform:uppercase;color:#A0C9CB;margin-bottom:12px">{{ t.rulesKicker }}</div>
+    <h2 style="font-family:'Playfair Display','Amiri',serif;font-weight:600;font-size:32px;margin:0 0 10px">{{ t.rulesTitle }}</h2>
+    <p style="margin:0 0 24px;font-family:'Playfair Display','Amiri',serif;font-style:italic;font-size:18px;color:rgba(245,244,237,0.75)">{{ t.rulesIntro }}</p>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <sc-for list="{{ rules }}" as="r" hint-placeholder-count="4">
+        <div style="display:flex;gap:14px;align-items:baseline">
+          <span style="color:#A0C9CB;font-size:14px">◆</span>
+          <span>{{ r }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- ============ APPLIANCE TIPS ============ -->
+  <section data-screen-label="Appliance tips" style="padding:52px 32px">
+    <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:12px;letter-spacing:0.24em;text-transform:uppercase;color:#FF6037;margin-bottom:12px">{{ t.tipsKicker }}</div>
+    <h2 style="font-family:'Playfair Display','Amiri',serif;font-weight:600;font-size:32px;margin:0 0 24px">{{ t.tipsTitle }}</h2>
+    <div style="border-top:1px solid rgba(53,30,28,0.18)">
+      <sc-for list="{{ tips }}" as="tip" hint-placeholder-count="4">
+        <div style="border-bottom:1px solid rgba(53,30,28,0.18)">
+          <button onClick="{{ tip.toggle }}" style="width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;background:none;border:none;padding:18px 0;cursor:pointer;text-align:start;color:#351E1C">
+            <span style="font-family:'Playfair Display','Amiri',serif;font-size:20px;font-weight:600">{{ tip.q }}</span>
+            <span style="font-family:'Jost',sans-serif;font-size:20px;color:#FF6037">{{ tip.mark }}</span>
+          </button>
+          <sc-if value="{{ tip.open }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0;padding:0 0 20px;color:rgba(53,30,28,0.85)">{{ tip.a }}</p>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- ============ NEIGHBOURHOOD ============ -->
+  <section data-screen-label="Neighbourhood" style="background:#ECECDC;padding:52px 32px">
+    <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:12px;letter-spacing:0.24em;text-transform:uppercase;color:#FF6037;margin-bottom:12px">{{ t.hoodKicker }}</div>
+    <h2 style="font-family:'Playfair Display','Amiri',serif;font-weight:600;font-size:32px;margin:0 0 22px">{{ t.hoodTitle }}</h2>
+    <p style="margin:0 0 16px">{{ t.hood1 }}</p>
+    <p style="margin:0">{{ t.hood2 }}</p>
+  </section>
+
+  <!-- ============ RECOMMENDATIONS ============ -->
+  <section data-screen-label="Recommendations" style="padding:52px 32px">
+    <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:12px;letter-spacing:0.24em;text-transform:uppercase;color:#FF6037;margin-bottom:12px">{{ t.recsKicker }}</div>
+    <h2 style="font-family:'Playfair Display','Amiri',serif;font-weight:600;font-size:32px;margin:0 0 10px">{{ t.recsTitle }}</h2>
+    <p style="margin:0 0 28px;font-family:'Playfair Display','Amiri',serif;font-style:italic;font-size:18px;color:#733635">{{ t.recsIntro }}</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px">
+      <sc-for list="{{ cats }}" as="cat" hint-placeholder-count="6">
+        <div style="background:#FFFFFF;border:1px solid rgba(53,30,28,0.14);padding:24px 22px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">{{ cat.icon }}</span>
+            <span style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:13px;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;color:#733635">{{ cat.title }}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <sc-for list="{{ cat.recs }}" as="rec" hint-placeholder-count="2">
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:8px">
+                  <span style="font-family:'Playfair Display','Amiri',serif;font-size:19px;font-weight:600">{{ rec.name }}</span>
+                  <sc-if value="{{ rec.map }}" hint-placeholder-val="{{ false }}">
+                    <a href="{{ rec.map }}" target="_blank" rel="noopener" style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#FF6037;text-decoration:none;border-bottom:1px solid #FF6037">{{ t.mapLabel }}</a>
+                  </sc-if>
+                </div>
+                <sc-if value="{{ rec.area }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:12px;letter-spacing:0.06em;color:rgba(53,30,28,0.55)">{{ rec.area }}</div>
+                </sc-if>
+                <div style="font-size:15.5px;color:rgba(53,30,28,0.85)">{{ rec.blurb }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- ============ EMERGENCY STRIP ============ -->
+  <sc-if value="{{ showEmergency }}" hint-placeholder-val="{{ true }}">
+  <section data-screen-label="Emergency" style="background:#351E1C;color:#F5F4ED;padding:30px 32px">
+    <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:11px;letter-spacing:0.24em;text-transform:uppercase;color:#FF6037;margin-bottom:16px">{{ t.emergencyTitle }}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:12px 32px">
+      <sc-for list="{{ emergency }}" as="em" hint-placeholder-count="4">
+        <a href="{{ em.tel }}" style="text-decoration:none;display:flex;flex-direction:column;gap:2px">
+          <span style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#A0C9CB">{{ em.label }}</span>
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:18px;color:#F5F4ED">{{ em.num }}</span>
+        </a>
+      </sc-for>
+    </div>
+  </section>
+  </sc-if>
+
+  <!-- ============ WE'RE HERE ============ -->
+  <section data-screen-label="Contact" style="background:#351E1C;color:#F5F4ED;padding:56px 32px;text-align:center;border-top:1px solid rgba(160,201,203,0.25)">
+    <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:12px;letter-spacing:0.24em;text-transform:uppercase;color:#A0C9CB;margin-bottom:12px">{{ t.hereKicker }}</div>
+    <h2 style="font-family:'Playfair Display','Amiri',serif;font-weight:600;font-size:36px;margin:0 0 16px">{{ t.hereTitle }}</h2>
+    <p style="margin:0 auto 28px;max-width:440px;color:rgba(245,244,237,0.85)">{{ t.hereBody }}</p>
+    <a href="{{ waLink }}" target="_blank" rel="noopener" style="display:inline-block;background:#FF6037;color:#351E1C;text-decoration:none;font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-weight:600;font-size:16px;letter-spacing:0.06em;padding:16px 34px" style-hover="background:#F5F4ED">{{ t.hereCta }}</a>
+    <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:13px;letter-spacing:0.1em;color:#A0C9CB;margin-top:16px">{{ t.hereHours }}</div>
+  </section>
+
+  <!-- ============ CHECK-OUT ============ -->
+  <section data-screen-label="Check-out" style="padding:52px 32px 46px">
+    <div style="font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:12px;letter-spacing:0.24em;text-transform:uppercase;color:#FF6037;margin-bottom:12px">{{ t.byeKicker }}</div>
+    <h2 style="font-family:'Playfair Display','Amiri',serif;font-weight:600;font-size:32px;margin:0 0 8px">{{ t.byeTitle }}</h2>
+    <p style="margin:0 0 22px;font-family:'Playfair Display','Amiri',serif;font-style:italic;font-size:19px;color:#FF6037">{{ byeTime }}</p>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:26px">
+      <sc-for list="{{ byeList }}" as="b" hint-placeholder-count="4">
+        <div style="display:flex;gap:14px;align-items:baseline">
+          <span style="color:#733635;font-size:14px">◆</span>
+          <span>{{ b }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ calLink }}" hint-placeholder-val="{{ false }}">
+      <a href="{{ calLink }}" target="_blank" rel="noopener" style="display:inline-block;border:1.5px solid #351E1C;color:#351E1C;text-decoration:none;font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-weight:500;font-size:14px;letter-spacing:0.08em;padding:12px 24px" style-hover="background:#351E1C;color:#F5F4ED">{{ t.byeCal }}</a>
+    </sc-if>
+    <p style="margin:30px 0 0;font-family:'Playfair Display','Amiri',serif;font-style:italic;font-size:20px;color:#733635">{{ t.byeSign }}</p>
+  </section>
+
+  <footer style="background:#ECECDC;padding:22px 32px;text-align:center;font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(53,30,28,0.5)">JOOD · {{ t.heroLoc }}</footer>
+</div>
+
+<!-- ============ EDIT PANEL ============ -->
+<sc-if value="{{ editMode }}" hint-placeholder-val="{{ false }}">
+  <div dir="ltr" style="position:fixed;left:50%;bottom:84px;transform:translateX(-50%);width:min(560px,calc(100vw - 24px));max-height:58vh;overflow:auto;background:#FFFFFF;border:1px solid rgba(53,30,28,0.2);box-shadow:0 18px 50px rgba(53,30,28,0.28);padding:22px 22px 26px;z-index:60">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+      <span style="font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:#351E1C">Unit details</span>
+      <span style="font-family:'Jost',sans-serif;font-size:11px;letter-spacing:0.08em;color:rgba(53,30,28,0.5)">saved automatically</span>
+    </div>
+    <p style="margin:0 0 16px;font-family:'Jost',sans-serif;font-size:12.5px;color:rgba(53,30,28,0.6)">Fill these in for this unit, then use Export to download a filled copy for your guest.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px 14px">
+      <sc-for list="{{ fields }}" as="f" hint-placeholder-count="8">
+        <label style="display:flex;flex-direction:column;gap:4px">
+          <span style="font-family:'Jost',sans-serif;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#733635">{{ f.label }}</span>
+          <input type="{{ f.type }}" defaultValue="{{ f.value }}" data-key="{{ f.key }}" onInput="{{ onField }}" placeholder="{{ f.ph }}" style="border:1px solid rgba(53,30,28,0.25);background:#F5F4ED;padding:9px 11px;font-family:'Jost',sans-serif;font-size:14px;color:#351E1C;outline:none" style-focus="border-color:#FF6037">
+        </label>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+<!-- ============ TOOLBAR ============ -->
+<div dir="ltr" style="position:fixed;left:50%;bottom:20px;transform:translateX(-50%);display:flex;gap:8px;background:#351E1C;padding:8px;box-shadow:0 10px 30px rgba(53,30,28,0.35);z-index:70;border-radius:999px">
+  <button onClick="{{ toggleLang }}" style="background:none;border:1px solid rgba(160,201,203,0.5);color:#A0C9CB;font-family:'Jost','IBM Plex Sans Arabic',sans-serif;font-size:13px;padding:8px 16px;cursor:pointer;border-radius:999px" style-hover="border-color:#A0C9CB;color:#F5F4ED">{{ langBtn }}</button>
+  <button onClick="{{ toggleEdit }}" style="background:{{ editBtnBg }};border:1px solid rgba(245,244,237,0.35);color:{{ editBtnFg }};font-family:'Jost',sans-serif;font-size:13px;padding:8px 16px;cursor:pointer;border-radius:999px">{{ editBtn }}</button>
+  <button onClick="{{ exportCopy }}" style="background:none;border:1px solid rgba(245,244,237,0.35);color:#F5F4ED;font-family:'Jost',sans-serif;font-size:13px;padding:8px 16px;cursor:pointer;border-radius:999px" style-hover="border-color:#FF6037;color:#FF6037">Export ↓</button>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultLang&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;en&quot;,&quot;ar&quot;],&quot;default&quot;:&quot;en&quot;,&quot;tsType&quot;:&quot;'en'|'ar'&quot;,&quot;section&quot;:&quot;Guide&quot;},&quot;showEmergency&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Guide&quot;}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.DEFAULTS = {
+      unitName: 'Stone B-07',
+      floor: 'Building B · 3rd floor',
+      checkIn: '3:00 PM',
+      checkOut: '12:00 PM',
+      checkoutDate: '',
+      wifiSsid: 'JOOD_B07',
+      wifiPass: 'ahlan-2026',
+      doorCode: '4821#',
+      whatsapp: '+20 100 123 4567',
+      security: '+20 100 000 0000',
+      heroUrl: ''
+    };
+    const unit = (typeof window !== 'undefined' && window.__UNIT_DATA__) || null;
+    this.storageKey = 'jood-guide:' + (unit ? 'unit:' + (unit.unitName || 'x') : 'master');
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(this.storageKey) || '{}'); } catch (e) {}
+    this.state = {
+      d: Object.assign({}, this.DEFAULTS, unit || {}, saved),
+      lang: this.props.defaultLang ?? 'en',
+      editMode: false,
+      copied: '',
+      openTip: -1
+    };
+  }
+
+  setData(patch) {
+    this.setState(s => {
+      const d = Object.assign({}, s.d, patch);
+      try { localStorage.setItem(this.storageKey, JSON.stringify(d)); } catch (e) {}
+      return { d };
+    });
+  }
+
+  copy(key, value) {
+    try { navigator.clipboard.writeText(value); } catch (e) {}
+    this.setState({ copied: key });
+    clearTimeout(this._ct);
+    this._ct = setTimeout(() => this.setState({ copied: '' }), 1800);
+  }
+
+  mapUrl(q) {
+    return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
+  }
+
+  dict(lang) {
+    const en = {
+      heroKicker: 'Guest Guide',
+      heroTagline: 'your home in New Cairo',
+      heroLoc: 'Stone Residence · Fifth Settlement',
+      heroPlaceholder: 'hero photo — paste a URL in Edit',
+      welcomeKicker: 'A note from us',
+      welcomeTitle: 'Ahlan wa sahlan.',
+      welcome1: "We're so glad you're here. This apartment isn't a hotel floor or a franchise — it's one of ours, and we've set it up the way we'd want to arrive after a long trip: cool air, soft light, and everything where you'd expect to find it.",
+      welcome2: "This little guide covers the practical bits, plus a few places nearby that we genuinely love. Anything else at all — we're one message away.",
+      welcomeSign: '— The JOOD team',
+      unitKicker: 'The essentials',
+      unitTitle: 'Your stay',
+      lblUnit: 'Unit', lblFloor: 'Floor', lblCheckIn: 'Check-in from', lblCheckOut: 'Check-out by',
+      lblWifi: 'WiFi network', lblPass: 'Password', lblDoor: 'Door code',
+      tapCopy: 'tap to copy', copied: 'copied ✓',
+      qrCaption: 'Scan with your camera to connect',
+      checklistKicker: 'Day one',
+      checklistTitle: 'Your first hour',
+      checklist: [
+        'The door code above gets you in — press # after the digits.',
+        'AC remotes are on the coffee table; every room has its own unit.',
+        'Two bottles of water in the fridge are on us. Tap water is fine for cooking, bottled is better for drinking.',
+        'Scan the QR code above and you\u2019re online in seconds.',
+        'Compound access wristbands are in the drawer by the front door — you\u2019ll need them for the pool.'
+      ],
+      rulesKicker: 'House notes',
+      rulesTitle: 'A few small things',
+      rulesIntro: 'Nothing dramatic — just what keeps the place lovely for the next guest.',
+      rules: [
+        'Smoking happens on the balcony, not indoors.',
+        'The compound asks for quiet after 11pm — sound carries here.',
+        'Gatherings are welcome; parties aren\u2019t. If your plans grow, just tell us first.',
+        'Treat it like your own place — because for now, it is.'
+      ],
+      tipsKicker: 'Good to know',
+      tipsTitle: 'Around the apartment',
+      tips: [
+        { q: 'Air conditioning', a: 'Each room has its own split unit. 23–24°C is the sweet spot; below that they tend to drip. Please switch them off when you head out — New Cairo summers make them work hard.' },
+        { q: 'Water heater', a: 'Already on when you arrive. The bathroom switch with the red light controls it — leave it on and you\u2019ll always have hot water in a few minutes.' },
+        { q: 'Washing machine', a: 'In the kitchen. Detergent is under the sink; program 3 (30°C, one hour) handles almost everything. Drying rack is on the balcony.' },
+        { q: 'TV & streaming', a: 'The TV is signed into Netflix and YouTube on our house profile. Feel free to log into your own accounts — just log out before you leave.' }
+      ],
+      hoodKicker: 'Out the door',
+      hoodTitle: 'The neighbourhood',
+      hood1: 'Stone Residence sits in the quiet heart of the Fifth Settlement — leafy streets, wide pavements, and none of downtown\u2019s noise. Almost everything you\u2019ll need day-to-day is within ten minutes: Point 90 Mall, the 90th Street strip, and a small army of cafés.',
+      hood2: 'For an evening out, Downtown Katameya is the local favourite — open-air, easy, full of restaurants. Cairo Festival City is fifteen minutes for serious shopping, and when you want the real Cairo — the Nile, Khan el-Khalili, the pyramids — count on forty minutes by car and go early.',
+      recsKicker: 'Our little black book',
+      recsTitle: 'Where we\u2019d send a friend',
+      recsIntro: 'Not sponsored, not comprehensive — just the places we actually go.',
+      mapLabel: 'map ↗',
+      cats: [
+        { icon: '☕', title: 'Coffee', recs: [
+          { name: 'Espresso Lab', area: 'Point 90 Mall · 10 min', blurb: 'Serious specialty coffee. Get the Spanish latte — everyone does, and everyone\u2019s right.', map: this.mapUrl('Espresso Lab Point 90 Mall New Cairo') },
+          { name: '30 North', area: 'Downtown Katameya · 12 min', blurb: 'Egypt\u2019s homegrown chain, and better than the imports. Great iced drinks for hot afternoons.', map: this.mapUrl('30 North Downtown Katameya New Cairo') }
+        ]},
+        { icon: '🍽', title: 'Eat', recs: [
+          { name: 'Ovio', area: 'Point 90 Mall · 10 min', blurb: 'Breakfast is the move — sunny terrace, proper bread, excellent eggs. Lunch is good too.', map: this.mapUrl('Ovio Point 90 New Cairo') },
+          { name: 'Zooba', area: 'Cairo Festival City · 15 min', blurb: 'Egyptian street food, done beautifully. Order the taameya and hawawshi, thank us later.', map: this.mapUrl('Zooba Cairo Festival City') }
+        ]},
+        { icon: '🛒', title: 'Groceries', recs: [
+          { name: 'Seoudi Market', area: '90th Street · 5 min', blurb: 'Proper full supermarket, five minutes by car. They deliver too — message us for the number.', map: this.mapUrl('Seoudi Market 90th Street New Cairo') },
+          { name: 'Gourmet Egypt', area: 'Downtown Katameya · 12 min', blurb: 'For the fancy things: good cheese, fresh fish, imported everything.', map: this.mapUrl('Gourmet Egypt Downtown Katameya') }
+        ]},
+        { icon: '💊', title: 'Pharmacy', recs: [
+          { name: 'El Ezaby', area: '90th Street · 5 min', blurb: 'Open around the clock and they deliver. Hotline 19600 — they speak English.', map: this.mapUrl('El Ezaby Pharmacy 90th Street New Cairo') },
+          { name: 'Seif Pharmacy', area: 'Point 90 Mall · 10 min', blurb: 'Reliable chain inside the mall. Hotline 19199 if you\u2019d rather not go out.', map: this.mapUrl('Seif Pharmacy Point 90 New Cairo') }
+        ]},
+        { icon: '🏊', title: 'In the compound', recs: [
+          { name: 'Pool & gym', area: 'Stone Residence', blurb: 'Pool runs 8am–8pm — wristbands from the front-door drawer get you in, towels are in your wardrobe. The gym is by the clubhouse; your door code works there too.', map: null },
+          { name: 'The grounds', area: '', blurb: 'The central lawn is lovely after sunset, and there\u2019s a kids\u2019 play area beside it. Evening walks around the loop are a resident ritual.', map: null }
+        ]},
+        { icon: '🚗', title: 'Getting around', recs: [
+          { name: 'Uber & Careem', area: '', blurb: 'Both work well here — set your pickup at Gate 2, it\u2019s the easiest for drivers to find. Downtown is 30–45 minutes depending on traffic.', map: this.mapUrl('Stone Residence New Cairo Gate 2') },
+          { name: 'Renting a car', area: '', blurb: 'If you\u2019d rather drive, we can arrange a rental delivered to the compound with a day\u2019s notice — just message us.', map: null }
+        ]}
+      ],
+      emergencyTitle: 'Emergency numbers',
+      emLabels: { police: 'Police', ambulance: 'Ambulance', fire: 'Fire', security: 'Compound security' },
+      hereKicker: 'Seven days a week',
+      hereTitle: 'We\u2019re here.',
+      hereBody: 'A dripping AC, a restaurant booking, directions, anything odd at 11pm — message us on WhatsApp and a real person answers. That\u2019s the whole point of JOOD.',
+      hereCta: 'Message us on WhatsApp',
+      hereHours: '9am – 11pm · every day of your stay',
+      byeKicker: 'Before you go',
+      byeTitle: 'Checking out',
+      byeTimePrefix: 'By',
+      byeList: [
+        'Switch off the ACs and lights on your way out.',
+        'Leave any wristbands and remotes on the dining table.',
+        'Pull the door closed behind you — it locks itself.',
+        'Send us a quick message when you head out, so we know you\u2019re safely away.'
+      ],
+      byeCal: '＋ Add check-out to my calendar',
+      byeSign: 'Travel safe — and come back soon.',
+      editBtn: 'Edit', editDone: 'Done', langBtn: 'عربي'
+    };
+
+    const ar = {
+      heroKicker: 'دليل الضيوف',
+      heroTagline: 'بيتك في القاهرة الجديدة',
+      heroLoc: 'ستون ريزيدنس · التجمع الخامس',
+      heroPlaceholder: 'صورة الغلاف — ألصق رابطاً في وضع التعديل',
+      welcomeKicker: 'رسالة منّا',
+      welcomeTitle: 'أهلاً وسهلاً.',
+      welcome1: 'سعداء بوجودك معنا. هذه الشقة ليست غرفة فندق ولا فرعاً من سلسلة — إنها واحدة من شققنا، وجهّزناها كما نحب أن نصل نحن بعد رحلة طويلة: هواء بارد، إضاءة هادئة، وكل شيء في مكانه المتوقع.',
+      welcome2: 'هذا الدليل الصغير يغطي التفاصيل العملية، وبعض الأماكن القريبة التي نحبها فعلاً. ولأي شيء آخر — نحن على بُعد رسالة واحدة.',
+      welcomeSign: '— فريق جود',
+      unitKicker: 'الأساسيات',
+      unitTitle: 'إقامتك',
+      lblUnit: 'الوحدة', lblFloor: 'الطابق', lblCheckIn: 'الوصول من', lblCheckOut: 'المغادرة قبل',
+      lblWifi: 'شبكة الواي فاي', lblPass: 'كلمة المرور', lblDoor: 'رمز الباب',
+      tapCopy: 'اضغط للنسخ', copied: 'تم النسخ ✓',
+      qrCaption: 'امسح الرمز بالكاميرا للاتصال بالشبكة',
+      checklistKicker: 'اليوم الأول',
+      checklistTitle: 'ساعتك الأولى',
+      checklist: [
+        'رمز الباب أعلاه يفتح لك — اضغط # بعد الأرقام.',
+        'أجهزة التحكم في التكييف على طاولة القهوة، ولكل غرفة وحدتها الخاصة.',
+        'زجاجتا مياه في الثلاجة هدية منا. ماء الصنبور مناسب للطبخ، والمعبأ أفضل للشرب.',
+        'امسح رمز QR أعلاه وستتصل بالإنترنت في ثوانٍ.',
+        'أساور دخول الكمبوند في الدرج بجوار الباب — ستحتاجها لحمام السباحة.'
+      ],
+      rulesKicker: 'ملاحظات البيت',
+      rulesTitle: 'أشياء صغيرة',
+      rulesIntro: 'لا شيء صارم — فقط ما يُبقي المكان جميلاً للضيف التالي.',
+      rules: [
+        'التدخين في الشرفة، وليس داخل الشقة.',
+        'الكمبوند يطلب الهدوء بعد الحادية عشرة مساءً — الصوت يُسمع هنا.',
+        'التجمعات العائلية أهلاً بها؛ الحفلات لا. إن كبرت خططك، أخبرنا أولاً.',
+        'عامل المكان كأنه بيتك — لأنه، الآن، بيتك فعلاً.'
+      ],
+      tipsKicker: 'يفيدك معرفته',
+      tipsTitle: 'داخل الشقة',
+      tips: [
+        { q: 'التكييف', a: 'لكل غرفة وحدة مستقلة. درجة ٢٣–٢٤ هي الأنسب؛ أقل من ذلك قد تقطر الوحدة. نرجو إطفاءها عند الخروج — صيف القاهرة الجديدة يجهدها.' },
+        { q: 'سخان الماء', a: 'مُشغَّل عند وصولك. المفتاح ذو الضوء الأحمر في الحمام يتحكم فيه — اتركه مفتوحاً وسيتوفر الماء الساخن دائماً خلال دقائق.' },
+        { q: 'الغسالة', a: 'في المطبخ. المسحوق تحت الحوض؛ البرنامج ٣ (٣٠ درجة، ساعة واحدة) يناسب كل شيء تقريباً. منشر الغسيل في الشرفة.' },
+        { q: 'التلفزيون والبث', a: 'التلفزيون مسجّل على حساب البيت في نتفليكس ويوتيوب. يمكنك الدخول بحساباتك — فقط سجّل الخروج قبل المغادرة.' }
+      ],
+      hoodKicker: 'خارج الباب',
+      hoodTitle: 'الحيّ',
+      hood1: 'يقع ستون ريزيدنس في قلب التجمع الخامس الهادئ — شوارع مشجّرة وأرصفة واسعة وبعيداً عن ضجيج وسط البلد. كل ما تحتاجه يومياً في نطاق عشر دقائق: بوينت ٩٠ مول، وشارع التسعين، وعدد لا يُحصى من المقاهي.',
+      hood2: 'لسهرة لطيفة، داون تاون القطامية هو المفضل محلياً — مفتوح الهواء ومليء بالمطاعم. كايرو فستيفال سيتي على بُعد ربع ساعة للتسوق الجاد، وحين تشتاق للقاهرة الحقيقية — النيل وخان الخليلي والأهرامات — احسب أربعين دقيقة بالسيارة وانطلق مبكراً.',
+      recsKicker: 'دفترنا الصغير',
+      recsTitle: 'أين نرسل أصدقاءنا',
+      recsIntro: 'ليست إعلانات وليست قائمة شاملة — فقط الأماكن التي نذهب إليها فعلاً.',
+      mapLabel: 'الخريطة ↗',
+      cats: [
+        { icon: '☕', title: 'قهوة', recs: [
+          { name: 'Espresso Lab', area: 'بوينت ٩٠ مول · ١٠ دقائق', blurb: 'قهوة مختصة بجدية. اطلب السبانيش لاتيه — الجميع يفعل، والجميع على حق.', map: this.mapUrl('Espresso Lab Point 90 Mall New Cairo') },
+          { name: '30 North', area: 'داون تاون القطامية · ١٢ دقيقة', blurb: 'سلسلة مصرية أفضل من المستوردة. مشروبات مثلجة ممتازة لعصاري الصيف.', map: this.mapUrl('30 North Downtown Katameya New Cairo') }
+        ]},
+        { icon: '🍽', title: 'طعام', recs: [
+          { name: 'Ovio', area: 'بوينت ٩٠ مول · ١٠ دقائق', blurb: 'الفطور هو الأفضل هنا — تراس مشمس وخبز حقيقي وبيض ممتاز. والغداء جيد أيضاً.', map: this.mapUrl('Ovio Point 90 New Cairo') },
+          { name: 'Zooba', area: 'كايرو فستيفال سيتي · ١٥ دقيقة', blurb: 'أكل الشارع المصري بشكل جميل. اطلب الطعمية والحواوشي واشكرنا لاحقاً.', map: this.mapUrl('Zooba Cairo Festival City') }
+        ]},
+        { icon: '🛒', title: 'بقالة', recs: [
+          { name: 'سعودي ماركت', area: 'شارع التسعين · ٥ دقائق', blurb: 'سوبر ماركت كامل على بُعد خمس دقائق بالسيارة. يوصّلون أيضاً — راسلنا للرقم.', map: this.mapUrl('Seoudi Market 90th Street New Cairo') },
+          { name: 'جورميه إيجيبت', area: 'داون تاون القطامية · ١٢ دقيقة', blurb: 'للأشياء الفاخرة: جبن جيد وسمك طازج وكل شيء مستورد.', map: this.mapUrl('Gourmet Egypt Downtown Katameya') }
+        ]},
+        { icon: '💊', title: 'صيدلية', recs: [
+          { name: 'العزبي', area: 'شارع التسعين · ٥ دقائق', blurb: 'مفتوحة على مدار الساعة وتوصّل للمنزل. الخط الساخن ١٩٦٠٠.', map: this.mapUrl('El Ezaby Pharmacy 90th Street New Cairo') },
+          { name: 'صيدليات سيف', area: 'بوينت ٩٠ مول · ١٠ دقائق', blurb: 'سلسلة موثوقة داخل المول. الخط الساخن ١٩١٩٩ إن لم ترغب في الخروج.', map: this.mapUrl('Seif Pharmacy Point 90 New Cairo') }
+        ]},
+        { icon: '🏊', title: 'داخل الكمبوند', recs: [
+          { name: 'المسبح والجيم', area: 'ستون ريزيدنس', blurb: 'المسبح من ٨ صباحاً حتى ٨ مساءً — الأساور في درج الباب تدخلك، والمناشف في الدولاب. الجيم بجوار الكلوب هاوس ورمز بابك يعمل هناك أيضاً.', map: null },
+          { name: 'الحدائق', area: '', blurb: 'الحديقة المركزية رائعة بعد الغروب، وبجوارها منطقة ألعاب للأطفال. المشي مساءً حول الممر عادة السكان هنا.', map: null }
+        ]},
+        { icon: '🚗', title: 'التنقّل', recs: [
+          { name: 'أوبر وكريم', area: '', blurb: 'كلاهما يعمل جيداً هنا — حدد نقطة الانطلاق عند البوابة ٢، فهي الأسهل للسائقين. وسط البلد بين ٣٠ و٤٥ دقيقة حسب الزحام.', map: this.mapUrl('Stone Residence New Cairo Gate 2') },
+          { name: 'استئجار سيارة', area: '', blurb: 'إن فضّلت القيادة، نرتب لك سيارة تصل إلى الكمبوند بإشعار يوم واحد — فقط راسلنا.', map: null }
+        ]}
+      ],
+      emergencyTitle: 'أرقام الطوارئ',
+      emLabels: { police: 'الشرطة', ambulance: 'الإسعاف', fire: 'المطافئ', security: 'أمن الكمبوند' },
+      hereKicker: 'سبعة أيام في الأسبوع',
+      hereTitle: 'نحن هنا.',
+      hereBody: 'تكييف يقطر، حجز مطعم، اتجاهات، أو أي شيء غريب في الحادية عشرة مساءً — راسلنا على واتساب وسيجيبك إنسان حقيقي. هذه هي فكرة جود كلها.',
+      hereCta: 'راسلنا على واتساب',
+      hereHours: '٩ صباحاً – ١١ مساءً · كل أيام إقامتك',
+      byeKicker: 'قبل الرحيل',
+      byeTitle: 'المغادرة',
+      byeTimePrefix: 'قبل',
+      byeList: [
+        'أطفئ المكيفات والأنوار في طريقك للخارج.',
+        'اترك الأساور وأجهزة التحكم على طاولة الطعام.',
+        'أغلق الباب خلفك — يقفل تلقائياً.',
+        'أرسل لنا رسالة سريعة عند انطلاقك، لنطمئن أنك بخير.'
+      ],
+      byeCal: '＋ أضف موعد المغادرة إلى تقويمي',
+      byeSign: 'رحلة آمنة — وعُد إلينا قريباً.',
+      editBtn: 'تعديل', editDone: 'تم', langBtn: 'English'
+    };
+    return lang === 'ar' ? ar : en;
+  }
+
+  exportCopy = async () => {
+    try {
+      const res = await fetch(location.pathname);
+      let src = await res.text();
+      const openTag = '<scr' + 'ipt>';
+      const closeTag = '</' + 'scr' + 'ipt>';
+      const payload = openTag + 'window.__UNIT_DATA__=' + JSON.stringify(this.state.d) + ';' + closeTag;
+      if (src.includes('<head>')) src = src.replace('<head>', '<head>' + payload);
+      else src = payload + src;
+      src = src.replace(/src="(\.\/)?support\.js"/g, 'src="' + new URL('support.js', location.href).href + '"');
+      const blob = new Blob([src], { type: 'text/html' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'JOOD-guide-' + (this.state.d.unitName || 'unit').replace(/[^\w-]+/g, '-') + '.html';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+    } catch (e) { console.warn('Export failed', e); }
+  };
+
+  renderVals() {
+    const { d, lang, editMode, copied, openTip } = this.state;
+    const t = this.dict(lang);
+    const digits = (d.whatsapp || '').replace(/[^\d]/g, '');
+    const qrData = 'WIFI:T:WPA;S:' + d.wifiSsid + ';P:' + d.wifiPass + ';;';
+    const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=6&color=351E1C&bgcolor=F5F4ED&data=' + encodeURIComponent(qrData);
+
+    let calLink = '';
+    if (d.checkoutDate && /^\d{4}-\d{2}-\d{2}$/.test(d.checkoutDate)) {
+      const s = d.checkoutDate.replace(/-/g, '');
+      const next = new Date(d.checkoutDate + 'T00:00:00');
+      next.setDate(next.getDate() + 1);
+      const e = next.toISOString().slice(0, 10).replace(/-/g, '');
+      calLink = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' +
+        encodeURIComponent('JOOD check-out — ' + d.unitName + ' (by ' + d.checkOut + ')') +
+        '&dates=' + s + '/' + e +
+        '&details=' + encodeURIComponent('Check-out by ' + d.checkOut + '. Leave wristbands and remotes on the dining table and message us on WhatsApp when you head out.');
+    }
+
+    const tips = t.tips.map((tip, i) => ({
+      q: tip.q, a: tip.a,
+      open: i === openTip,
+      mark: i === openTip ? '−' : '+',
+      toggle: () => this.setState(s => ({ openTip: s.openTip === i ? -1 : i }))
+    }));
+
+    const emergency = [
+      { label: t.emLabels.police, num: '122', tel: 'tel:122' },
+      { label: t.emLabels.ambulance, num: '123', tel: 'tel:123' },
+      { label: t.emLabels.fire, num: '180', tel: 'tel:180' },
+      { label: t.emLabels.security, num: d.security, tel: 'tel:' + (d.security || '').replace(/[^\d+]/g, '') }
+    ];
+
+    const fields = [
+      { key: 'unitName', label: 'Unit name', value: d.unitName, type: 'text', ph: 'Stone B-07' },
+      { key: 'floor', label: 'Floor / building', value: d.floor, type: 'text', ph: 'Building B · 3rd floor' },
+      { key: 'checkIn', label: 'Check-in from', value: d.checkIn, type: 'text', ph: '3:00 PM' },
+      { key: 'checkOut', label: 'Check-out by', value: d.checkOut, type: 'text', ph: '12:00 PM' },
+      { key: 'checkoutDate', label: 'Check-out date (for calendar)', value: d.checkoutDate, type: 'date', ph: '' },
+      { key: 'wifiSsid', label: 'WiFi network', value: d.wifiSsid, type: 'text', ph: 'JOOD_B07' },
+      { key: 'wifiPass', label: 'WiFi password', value: d.wifiPass, type: 'text', ph: '' },
+      { key: 'doorCode', label: 'Door code', value: d.doorCode, type: 'text', ph: '4821#' },
+      { key: 'whatsapp', label: 'WhatsApp number', value: d.whatsapp, type: 'text', ph: '+20 …' },
+      { key: 'security', label: 'Compound security phone', value: d.security, type: 'text', ph: '+20 …' },
+      { key: 'heroUrl', label: 'Hero photo URL', value: d.heroUrl, type: 'text', ph: 'https://…' }
+    ];
+
+    return {
+      t, d,
+      dir: lang === 'ar' ? 'rtl' : 'ltr',
+      lang,
+      editMode,
+      hasHero: !!d.heroUrl,
+      noHero: !d.heroUrl,
+      heroImg: d.heroUrl ? React.createElement('img', { src: d.heroUrl, alt: '', style: { display: 'block', width: '100%', height: '320px', objectFit: 'cover' } }) : null,
+      qrImg: React.createElement('img', { src: qrUrl, alt: 'WiFi QR', width: 150, height: 150, style: { display: 'block', background: '#F5F4ED', padding: '8px' } }),
+      calLink,
+      waLink: 'https://wa.me/' + digits,
+      byeTime: t.byeTimePrefix + ' ' + d.checkOut,
+      wifiCopyLabel: copied === 'wifi' ? t.copied : t.tapCopy,
+      codeCopyLabel: copied === 'code' ? t.copied : t.tapCopy,
+      copyWifi: () => this.copy('wifi', d.wifiPass),
+      copyCode: () => this.copy('code', d.doorCode),
+      tips,
+      rules: t.rules,
+      checklist: t.checklist.map((text, i) => ({ n: String(i + 1).padStart(2, '0'), text })),
+      byeList: t.byeList,
+      cats: t.cats,
+      emergency,
+      showEmergency: this.props.showEmergency ?? true,
+      fields,
+      onField: (e) => {
+        const k = e.target.getAttribute('data-key');
+        if (k) this.setData({ [k]: e.target.value });
+      },
+      toggleLang: () => this.setState(s => ({ lang: s.lang === 'ar' ? 'en' : 'ar' })),
+      toggleEdit: () => this.setState(s => ({ editMode: !s.editMode })),
+      exportCopy: this.exportCopy,
+      langBtn: t.langBtn,
+      editBtn: editMode ? t.editDone : t.editBtn + ' ✎',
+      editBtnBg: editMode ? '#FF6037' : 'transparent',
+      editBtnFg: editMode ? '#351E1C' : '#F5F4ED'
+    };
+  }
+}
+</script>
+</body>
+</html>

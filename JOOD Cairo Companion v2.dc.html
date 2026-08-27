@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160"><rect width="160" height="160" fill="#F5F4ED"/><circle cx="80" cy="80" r="34" fill="none" stroke="#FF6037" stroke-width="6"/><circle cx="80" cy="80" r="9" fill="#733635"/></svg></template>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#F5F4ED}
+*{box-sizing:border-box}
+a{color:#733635}
+a:hover{color:#FF6037}
+button{font:inherit}
+input{font:inherit;color:inherit}
+input::placeholder{color:rgba(53,30,28,0.38)}
+::selection{background:#FF6037;color:#F5F4ED}
+@keyframes cc-ping{0%{transform:scale(1);opacity:0.55}100%{transform:scale(2.8);opacity:0}}
+@keyframes cc-rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes cc-pop{0%{transform:scale(0.5);opacity:0}60%{transform:scale(1.2);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes cc-dots{0%,80%,100%{opacity:0.25}40%{opacity:1}}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#F5F4ED;color:#351E1C;font-family:'Geist',sans-serif;font-size:16px;line-height:1.6;display:flex;flex-direction:column">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px clamp(14px,3vw,26px);border-bottom:1px solid rgba(53,30,28,0.14)">
+    <div style="display:flex;align-items:center;gap:12px;min-width:0">
+      <img src="assets/jood-logo-coral.png" alt="JOOD" style="height:26px;width:auto;display:block;flex:0 0 auto">
+      <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(53,30,28,0.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ d.unitName }} · New Cairo</span>
+    </div>
+    <button onClick="{{ toggleTray }}" style="display:inline-flex;align-items:center;gap:9px;background:{{ trayBtnBg }};color:{{ trayBtnFg }};border:1px solid #351E1C;border-radius:999px;padding:7px 14px;cursor:pointer;font-size:12.5px;font-weight:500;flex:0 0 auto" style-hover="background:#FF6037;color:#351E1C;border-color:#FF6037">
+      <span>Trip list</span>
+      <span style="display:grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#FF6037;color:#351E1C;font-family:'Geist Mono',monospace;font-size:11px">{{ savedCount }}</span>
+    </button>
+  </div>
+
+  <main style="flex:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:0;align-items:stretch">
+
+    <section data-screen-label="Ask" style="display:flex;flex-direction:column;min-width:0;border-right:1px solid rgba(53,30,28,0.14)">
+
+      <div style="padding:clamp(20px,3vw,32px) clamp(18px,3vw,32px) 16px;border-bottom:1px solid rgba(53,30,28,0.14)">
+        <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:#FF6037;margin-bottom:10px">{{ greetKicker }}</div>
+        <h1 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(30px,4vw,42px);line-height:1.08;margin:0 0 16px;text-wrap:balance">{{ greetLine }}</h1>
+        <form onSubmit="{{ onSubmit }}" style="display:flex;align-items:center;gap:10px;border:1.5px solid #351E1C;border-radius:999px;padding:10px 10px 10px 18px;background:#FFFDF8">
+          <input ref="{{ inputRef }}" value="{{ query }}" onChange="{{ onChange }}" placeholder="{{ placeholder }}" style="flex:1;min-width:0;background:none;border:none;outline:none;font-size:15px">
+          <button type="button" onClick="{{ surprise }}" title="Surprise me" style="background:none;border:none;cursor:pointer;font-size:17px;line-height:1;padding:6px;color:rgba(53,30,28,0.45)" style-hover="color:#FF6037">◈</button>
+          <button type="submit" style="background:#351E1C;border:none;border-radius:999px;color:#F5F4ED;font-size:12px;font-weight:500;letter-spacing:0.06em;padding:9px 17px;cursor:pointer;flex:0 0 auto" style-hover="background:#FF6037;color:#351E1C">Ask</button>
+        </form>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">
+          <sc-for list="{{ chips }}" as="ch" hint-placeholder-count="7">
+            <button onClick="{{ ch.ask }}" style="background:{{ ch.bg }};border:1px solid {{ ch.border }};color:{{ ch.fg }};border-radius:999px;font-size:12px;padding:6px 12px;cursor:pointer;transition:all 0.18s ease" style-hover="border-color:#FF6037;color:#FF6037">{{ ch.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="flex:1;padding:clamp(18px,3vw,28px) clamp(18px,3vw,32px) 28px;display:flex;flex-direction:column;gap:16px;min-height:340px">
+
+        <sc-if value="{{ thinking }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:8px;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(53,30,28,0.45)">
+            <span style="animation:cc-dots 1.2s infinite">●</span><span style="animation:cc-dots 1.2s 0.2s infinite">●</span><span style="animation:cc-dots 1.2s 0.4s infinite">●</span>
+            <span style="margin-left:4px">thinking</span>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasAnswer }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:14px;animation:cc-rise 0.4s cubic-bezier(0.16,1,0.3,1) both">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+              <h2 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(24px,3vw,31px);line-height:1.12;margin:0;text-wrap:pretty">{{ answerTitle }}</h2>
+              <span style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(53,30,28,0.4);white-space:nowrap">{{ answerTag }}</span>
+            </div>
+            <sc-if value="{{ hasNote }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0;font-size:15.5px;color:rgba(53,30,28,0.78);max-width:52ch;text-wrap:pretty">{{ answerNote }}</p>
+            </sc-if>
+
+            <sc-if value="{{ isStory }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:12px;max-width:56ch">
+                <sc-for list="{{ story }}" as="pa" hint-placeholder-count="3">
+                  <p style="margin:0;font-size:15.5px;line-height:1.72;color:rgba(53,30,28,0.86)">{{ pa.text }}</p>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ hasLines }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:9px;max-width:54ch">
+                <sc-for list="{{ lines }}" as="ln" hint-placeholder-count="3">
+                  <div style="display:flex;gap:12px;align-items:baseline">
+                    <span style="font-family:'Geist Mono',monospace;font-size:10.5px;color:#FF6037;flex:0 0 auto">{{ ln.n }}</span>
+                    <span style="font-size:15.5px;color:rgba(53,30,28,0.86)">{{ ln.text }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ hasCopyables }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-wrap:wrap;gap:10px">
+                <sc-for list="{{ copyables }}" as="cp" hint-placeholder-count="2">
+                  <button onClick="{{ cp.copy }}" style="display:flex;flex-direction:column;gap:5px;align-items:flex-start;background:#351E1C;color:#F5F4ED;border:none;border-radius:6px;padding:12px 16px;cursor:pointer;text-align:left" style-hover="background:#FF6037;color:#351E1C">
+                    <span style="font-family:'Geist Mono',monospace;font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;color:{{ cp.kColor }}">{{ cp.k }}</span>
+                    <span style="font-family:'Geist Mono',monospace;font-size:18px">{{ cp.v }}</span>
+                    <span style="display:inline-flex;align-items:center;gap:5px;font-family:'Geist Mono',monospace;font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:{{ cp.labelColor }}">
+                      <sc-if value="{{ cp.flash }}" hint-placeholder-val="{{ false }}"><span style="display:inline-block;animation:cc-pop 0.4s ease">✓</span></sc-if>
+                      <span>{{ cp.label }}</span>
+                    </span>
+                  </button>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ hasPicks }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;border-top:1px solid rgba(53,30,28,0.16)">
+                <sc-for list="{{ picks }}" as="pk" hint-placeholder-count="3">
+                  <div style="display:flex;gap:12px;align-items:flex-start;padding:13px 0;border-bottom:1px solid rgba(53,30,28,0.11);background:{{ pk.rowBg }};transition:background 0.2s ease">
+                    <button onClick="{{ pk.focus }}" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;align-items:flex-start;background:none;border:none;padding:0;cursor:pointer;text-align:left;color:#351E1C">
+                      <span style="display:flex;align-items:baseline;gap:9px;flex-wrap:wrap">
+                        <span style="font-family:'Geist Mono',monospace;font-size:10.5px;color:{{ pk.numColor }}">{{ pk.n }}</span>
+                        <span style="font-family:'Instrument Serif',serif;font-size:22px;line-height:1.15">{{ pk.name }}</span>
+                        <span style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#FF6037">{{ pk.drive }}</span>
+                      </span>
+                      <span style="font-size:14.5px;color:rgba(53,30,28,0.76);text-wrap:pretty">{{ pk.blurb }}</span>
+                    </button>
+                    <button onClick="{{ pk.save }}" title="{{ pk.saveTitle }}" style="flex:0 0 auto;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;border:1px solid {{ pk.saveBorder }};background:{{ pk.saveBg }};color:{{ pk.saveFg }};cursor:pointer;font-size:14px;transition:all 0.18s ease" style-hover="border-color:#FF6037">{{ pk.saveMark }}</button>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ hasActions }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-wrap:wrap;gap:8px">
+                <sc-for list="{{ actions }}" as="ac" hint-placeholder-count="1">
+                  <a href="{{ ac.href }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:#FF6037;color:#351E1C;text-decoration:none;border-radius:999px;font-size:12.5px;font-weight:500;padding:10px 18px" style-hover="background:#351E1C;color:#F5F4ED">{{ ac.label }} ↗</a>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ hasFollow }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-top:2px">
+                <span style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(53,30,28,0.38)">Then</span>
+                <sc-for list="{{ follow }}" as="fu" hint-placeholder-count="2">
+                  <button onClick="{{ fu.ask }}" style="background:none;border:1px solid rgba(115,54,53,0.35);color:#733635;border-radius:999px;font-size:12px;padding:6px 12px;cursor:pointer;transition:all 0.18s ease" style-hover="border-color:#FF6037;color:#FF6037">{{ fu.label }}</button>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+      </div>
+    </section>
+
+    <section data-screen-label="Map" style="display:flex;flex-direction:column;min-width:0;background:#EFEDE2">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px clamp(14px,2.5vw,20px);border-bottom:1px solid rgba(53,30,28,0.14);background:#F5F4ED">
+        <div style="display:flex;gap:6px">
+          <sc-for list="{{ mapViews }}" as="mv" hint-placeholder-count="2">
+            <button onClick="{{ mv.pick }}" style="padding:6px 13px;border:1px solid {{ mv.border }};background:{{ mv.bg }};color:{{ mv.fg }};border-radius:999px;font-size:11.5px;cursor:pointer;transition:all 0.18s ease" style-hover="border-color:#FF6037">{{ mv.label }}</button>
+          </sc-for>
+        </div>
+        <span style="font-family:'Geist Mono',monospace;font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(53,30,28,0.42)">{{ mapHint }}</span>
+      </div>
+
+      <div style="position:relative;width:100%;aspect-ratio:1.2;min-height:300px;background-image:linear-gradient(rgba(53,30,28,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(53,30,28,0.05) 1px,transparent 1px);background-size:7% 8.4%;overflow:hidden">
+        <svg viewBox="0 0 100 64" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%">
+          <sc-if value="{{ hasNile }}" hint-placeholder-val="{{ false }}">
+            <path d="{{ nilePath }}" fill="none" stroke="#A0C9CB" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"></path>
+          </sc-if>
+          <sc-for list="{{ roads }}" as="rd" hint-placeholder-count="2">
+            <path d="{{ rd.d }}" fill="none" stroke="rgba(53,30,28,0.16)" stroke-width="0.45" stroke-dasharray="1.5 1.4"></path>
+          </sc-for>
+          <sc-for list="{{ threads }}" as="th" hint-placeholder-count="0">
+            <path d="{{ th.d }}" fill="none" stroke="rgba(255,96,55,0.5)" stroke-width="0.4" stroke-dasharray="1 1.2"></path>
+          </sc-for>
+        </svg>
+
+        <sc-for list="{{ districts }}" as="ds" hint-placeholder-count="4">
+          <span style="position:absolute;left:{{ ds.x }}%;top:{{ ds.y }}%;transform:translate(-50%,-50%);font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(53,30,28,0.3);pointer-events:none;white-space:nowrap">{{ ds.name }}</span>
+        </sc-for>
+
+        <sc-for list="{{ pins }}" as="pn" hint-placeholder-count="8">
+          <button onClick="{{ pn.click }}" title="{{ pn.title }}" style="position:absolute;left:{{ pn.x }}%;top:{{ pn.y }}%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:5px;background:none;border:none;padding:4px;cursor:pointer;white-space:nowrap;z-index:{{ pn.z }};opacity:{{ pn.opacity }};transition:opacity 0.25s ease">
+            <span style="position:relative;display:grid;place-items:center;width:{{ pn.size }};height:{{ pn.size }};border-radius:50%;background:{{ pn.dot }};border:1.5px solid {{ pn.ring }};flex:0 0 auto;transition:all 0.2s ease">
+              <sc-if value="{{ pn.ping }}" hint-placeholder-val="{{ false }}">
+                <span style="position:absolute;inset:0;border-radius:50%;background:{{ pn.dot }};animation:cc-ping 2.4s ease-out infinite"></span>
+              </sc-if>
+            </span>
+            <span style="font-family:'Geist Mono',monospace;font-size:{{ pn.fs }};letter-spacing:0.03em;color:{{ pn.labelColor }};text-shadow:0 1px 0 #EFEDE2,0 -1px 0 #EFEDE2,1px 0 0 #EFEDE2,-1px 0 0 #EFEDE2">{{ pn.name }}</span>
+          </button>
+        </sc-for>
+
+        <div style="position:absolute;left:12px;bottom:10px;display:flex;align-items:center;gap:8px;font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(53,30,28,0.45)">
+          <span style="display:block;width:{{ scaleWidth }};height:1px;background:rgba(53,30,28,0.45)"></span><span>{{ scaleLabel }}</span>
+        </div>
+      </div>
+
+      <div style="flex:1;border-top:1px solid rgba(53,30,28,0.14);background:#F5F4ED;padding:clamp(16px,2.5vw,24px);display:flex;flex-direction:column;gap:14px;min-height:230px">
+        <sc-if value="{{ noDetail }}" hint-placeholder-val="{{ true }}">
+          <div style="margin:auto;text-align:center;max-width:34ch;display:flex;flex-direction:column;gap:8px">
+            <span style="font-family:'Instrument Serif',serif;font-size:23px;color:rgba(53,30,28,0.6)">Tap any pin.</span>
+            <span style="font-size:14px;color:rgba(53,30,28,0.5)">Everything we’d actually send you to is on there — the big ones in dark red, the everyday ones small.</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ hasDetail }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:13px;animation:cc-rise 0.35s cubic-bezier(0.16,1,0.3,1) both">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(53,30,28,0.5)">
+              <span>{{ det.area }}</span>
+              <span style="color:#FF6037">{{ det.drive }}</span>
+            </div>
+            <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
+              <sc-if value="{{ det.hasPhoto }}" hint-placeholder-val="{{ false }}">
+                <div style="width:132px;height:132px;flex:0 0 auto;border:1px solid rgba(53,30,28,0.16)">
+                  <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="{{ det.slotId }}" shape="rect" placeholder="{{ det.photo }}" hint-size="100%,100%" style="width:100%;height:100%;display:block"></x-import>
+                </div>
+              </sc-if>
+              <div style="flex:1;min-width:190px;display:flex;flex-direction:column;gap:9px">
+                <h3 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:29px;line-height:1.1;margin:0">{{ det.name }}</h3>
+                <p style="margin:0;font-size:14.5px;color:rgba(53,30,28,0.82);text-wrap:pretty">{{ det.blurb }}</p>
+                <sc-if value="{{ det.hasFacts }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;gap:20px;flex-wrap:wrap;border-top:1px solid rgba(53,30,28,0.14);padding-top:9px">
+                    <div style="display:flex;flex-direction:column;gap:2px">
+                      <span style="font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(53,30,28,0.45)">Best hour</span>
+                      <span style="font-size:13.5px">{{ det.hour }}</span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:2px">
+                      <span style="font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(53,30,28,0.45)">Tickets</span>
+                      <span style="font-size:13.5px">{{ det.ticket }}</span>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+            </div>
+            <sc-if value="{{ det.hasTip }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0;font-family:'Instrument Serif',serif;font-style:italic;font-size:17px;line-height:1.5;color:#733635;text-wrap:pretty">{{ det.tip }}</p>
+            </sc-if>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button onClick="{{ det.save }}" style="display:inline-flex;align-items:center;gap:7px;border:1px solid {{ det.saveBorder }};background:{{ det.saveBg }};color:{{ det.saveFg }};border-radius:999px;font-size:12px;font-weight:500;padding:9px 15px;cursor:pointer;transition:all 0.18s ease" style-hover="border-color:#FF6037">{{ det.saveMark }} {{ det.saveLabel }}</button>
+              <a href="{{ det.map }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(53,30,28,0.22);border-radius:999px;text-decoration:none;color:#351E1C;font-size:12px;font-weight:500;padding:9px 15px" style-hover="border-color:#FF6037;color:#FF6037">Directions ↗</a>
+              <button onClick="{{ det.close }}" style="background:none;border:none;color:rgba(53,30,28,0.42);font-size:12px;padding:9px 6px;cursor:pointer" style-hover="color:#733635">Close</button>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </section>
+  </main>
+
+  <sc-if value="{{ trayOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:90;background:rgba(53,30,28,0.4);display:flex;align-items:flex-start;justify-content:center;padding:clamp(16px,6vh,80px) 16px">
+      <div style="width:min(520px,100%);background:#F5F4ED;border:1px solid rgba(53,30,28,0.2);box-shadow:0 22px 60px rgba(53,30,28,0.3);padding:22px;display:flex;flex-direction:column;gap:14px;max-height:80vh;overflow-y:auto;animation:cc-rise 0.3s cubic-bezier(0.16,1,0.3,1) both">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">
+          <span style="font-family:'Instrument Serif',serif;font-size:27px">Your trip list</span>
+          <button onClick="{{ closeTray }}" style="background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(53,30,28,0.5)" style-hover="color:#FF6037">Close ✕</button>
+        </div>
+        <sc-if value="{{ trayEmpty }}" hint-placeholder-val="{{ true }}">
+          <p style="margin:0;font-size:14.5px;color:rgba(53,30,28,0.65)">Nothing saved yet. Hit the ＋ on anything we suggest, or tap a pin and save it from there.</p>
+        </sc-if>
+        <sc-if value="{{ trayHas }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;border-top:1px solid rgba(53,30,28,0.14)">
+            <sc-for list="{{ savedList }}" as="sv" hint-placeholder-count="3">
+              <div style="display:flex;align-items:baseline;gap:12px;padding:11px 0;border-bottom:1px solid rgba(53,30,28,0.1)">
+                <span style="font-family:'Geist Mono',monospace;font-size:10.5px;color:#FF6037;flex:0 0 auto">{{ sv.n }}</span>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                  <span style="font-size:15px">{{ sv.name }}</span>
+                  <span style="font-family:'Geist Mono',monospace;font-size:10.5px;color:rgba(53,30,28,0.5)">{{ sv.area }} · {{ sv.drive }}</span>
+                </div>
+                <button onClick="{{ sv.remove }}" style="background:none;border:none;cursor:pointer;color:rgba(53,30,28,0.4);font-size:15px;flex:0 0 auto" style-hover="color:#FF6037">✕</button>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:4px">
+            <a href="{{ tripMapsLink }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:#351E1C;color:#F5F4ED;text-decoration:none;border-radius:999px;font-size:12.5px;font-weight:500;padding:11px 18px" style-hover="background:#FF6037;color:#351E1C">Open route in Maps ↗</a>
+            <a href="{{ tripWaLink }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(53,30,28,0.25);color:#351E1C;text-decoration:none;border-radius:999px;font-size:12.5px;font-weight:500;padding:11px 18px" style-hover="border-color:#FF6037;color:#FF6037">Send to WhatsApp ↗</a>
+            <button onClick="{{ clearTrip }}" style="background:none;border:1px solid rgba(53,30,28,0.18);color:rgba(53,30,28,0.55);border-radius:999px;font-size:12.5px;padding:11px 16px;cursor:pointer" style-hover="border-color:#733635;color:#733635">Clear</button>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:860}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.d = Object.assign({
+      unitName: 'Stone B-07', floor: 'Building B · 3rd', checkIn: '3:00 PM', checkOut: '12:00 PM',
+      wifiSsid: 'JOOD_B07', wifiPass: 'ahlan-2026', doorCode: '4821#',
+      whatsapp: '+20 100 123 4567', security: '+20 100 000 0000'
+    }, (typeof window !== 'undefined' && window.__UNIT_DATA__) || {});
+    this.wa = 'https://wa.me/' + (this.d.whatsapp || '').replace(/[^\d]/g, '');
+    this.base = { lat: 30.0300, lon: 31.4400 };
+    this.key = 'jood-cairo-trip:' + this.d.unitName;
+    let saved = [];
+    try { saved = JSON.parse(localStorage.getItem(this.key) || '[]'); } catch (e) {}
+
+    this.places = [
+      { id: 'pyramids', name: 'Giza Pyramids', full: 'Giza Pyramids & Sphinx', cat: 'icon', area: 'Giza', min: 45, band: 'far', lat: 29.9773, lon: 31.1325,
+        blurb: 'Older than almost everything, and still the reason people come. Walk past the first two and keep going to the panorama point.',
+        photo: 'The pyramids — wide, low sun, desert edge visible', hour: '7–9am, before the heat', ticket: '~700 EGP',
+        tip: 'Buy at the ticket window, never from someone who approaches you. A friendly "la shukran" ends most camel offers.' },
+      { id: 'gem', name: 'Grand Egyptian Museum', cat: 'icon', area: 'Giza plateau', min: 45, band: 'far', lat: 29.9938, lon: 31.1194,
+        blurb: 'Tutankhamun\u2019s entire collection in one place for the first time, in a building worth the trip on its own.',
+        photo: 'GEM — grand staircase or the Ramses atrium', hour: '9am, or late afternoon', ticket: '~1,200 EGP',
+        tip: 'Four hours minimum. Do Tutankhamun first, while your legs still work.' },
+      { id: 'khan', name: 'Khan el-Khalili', cat: 'icon', area: 'Islamic Cairo', min: 45, band: 'far', lat: 30.0477, lon: 31.2622,
+        blurb: 'Trading since the 14th century. Lanterns, spice, brass, tea, and a great deal of noise.',
+        photo: 'Khan el-Khalili — lantern-lit alley at night', hour: 'Late afternoon into evening', ticket: 'Free',
+        tip: 'Prices start high and are meant to move. Mint tea at El Fishawy first — it slows everything down.' },
+      { id: 'citadel', name: 'The Citadel', cat: 'icon', area: 'Old Cairo', min: 45, band: 'far', lat: 30.0287, lon: 31.2599,
+        blurb: 'Saladin\u2019s fortress, the Muhammad Ali Mosque inside it, and the best free view of the whole city.',
+        photo: 'The Citadel — mosque domes against the city haze', hour: '3pm to sunset', ticket: '~450 EGP',
+        tip: 'Shoes off, shoulders and knees covered. Walk down into Al-Muizz Street afterwards rather than driving.' },
+      { id: 'coptic', name: 'Coptic Cairo', cat: 'icon', area: 'Mar Girgis', min: 40, band: 'far', lat: 30.0059, lon: 31.2306,
+        blurb: 'Hanging Church, Ben Ezra Synagogue and the Coptic Museum in a few quiet lanes. The calmest corner of the city.',
+        photo: 'Coptic Cairo — Hanging Church façade or a stone lane', hour: 'Morning', ticket: 'Mostly free',
+        tip: 'Small and walkable — an easy two hours when the rest of Cairo feels like a lot.' },
+      { id: 'nile', name: 'Felucca on the Nile', cat: 'icon', area: 'Zamalek', min: 40, band: 'far', lat: 30.0500, lon: 31.2270,
+        blurb: 'An hour on a wooden sailboat, no engine, while the city goes gold and then dark. The cheapest great thing in Cairo.',
+        photo: 'Felucca sails at golden hour, skyline behind', hour: 'One hour before sunset', ticket: '~400–600 EGP per boat',
+        tip: 'Agree the price and the hour before you step on. Bring your own drinks — nobody minds.' },
+      { id: 'espresso', name: 'Espresso Lab', cat: 'coffee', area: 'Point 90 Mall', min: 10, band: 'near', lat: 30.0106, lon: 31.4290,
+        blurb: 'Serious specialty coffee. Get the Spanish latte — everyone does, and everyone\u2019s right.' },
+      { id: '30north', name: '30 North', cat: 'coffee', area: 'Downtown Katameya', min: 12, band: 'near', lat: 30.0165, lon: 31.4520,
+        blurb: 'Egypt\u2019s homegrown chain, better than the imports. Great iced drinks, open late.' },
+      { id: 'ovio', name: 'Ovio', cat: 'eat', area: 'Point 90 Mall', min: 10, band: 'near', lat: 30.0110, lon: 31.4283,
+        blurb: 'Breakfast is the move — sunny terrace, proper bread, excellent eggs. Good with kids.' },
+      { id: 'zooba', name: 'Zooba', cat: 'eat', area: 'Festival City', min: 15, band: 'near', lat: 30.0290, lon: 31.4070,
+        blurb: 'Egyptian street food done beautifully. Order the taameya and the hawawshi.' },
+      { id: 'sachi', name: 'Sachi', cat: 'eat', area: 'Downtown Katameya', min: 12, band: 'near', lat: 30.0170, lon: 31.4510,
+        blurb: 'Where New Cairo goes for a proper dinner out. Book ahead, especially Thursday.' },
+      { id: 'seoudi', name: 'Seoudi Market', cat: 'daily', area: '90th Street', min: 5, band: 'walk', lat: 30.0225, lon: 31.4360,
+        blurb: 'A full supermarket five minutes away. They deliver — message us for the number.' },
+      { id: 'gourmet', name: 'Gourmet Egypt', cat: 'daily', area: 'Downtown Katameya', min: 12, band: 'near', lat: 30.0168, lon: 31.4530,
+        blurb: 'For the fancy things: good cheese, fresh fish, imported everything.' },
+      { id: 'ezaby', name: 'El Ezaby Pharmacy', cat: 'daily', area: '90th Street', min: 5, band: 'walk', lat: 30.0210, lon: 31.4372,
+        blurb: 'Open around the clock and they deliver. Hotline 19600, English spoken.' },
+      { id: 'pool', name: 'The pool & gym', cat: 'daily', area: 'In the compound', min: 2, band: 'walk', lat: 30.0305, lon: 31.4408,
+        blurb: 'Pool 8am–8pm; wristbands are in the drawer by the front door. Your door code opens the gym.' },
+      { id: 'point90', name: 'Point 90 Mall', cat: 'evening', area: 'New Cairo', min: 10, band: 'near', lat: 30.0100, lon: 31.4295,
+        blurb: 'Cinema, food, and everything you forgot to pack.' },
+      { id: 'katameya', name: 'Downtown Katameya', cat: 'evening', area: 'New Cairo', min: 12, band: 'near', lat: 30.0160, lon: 31.4515,
+        blurb: 'Open-air, easy, full of restaurants. Fills up after eight with people who live here.' },
+      { id: 'cfc', name: 'Cairo Festival City', cat: 'evening', area: 'New Cairo', min: 15, band: 'near', lat: 30.0295, lon: 31.4065,
+        blurb: 'The serious shopping, plus a fountain show the kids will make you watch twice.' },
+      { id: 'zamalek', name: 'Zamalek', cat: 'evening', area: 'Nile island', min: 40, band: 'far', lat: 30.0614, lon: 31.2197,
+        blurb: 'Leafy, faded-grand island neighbourhood. Galleries, bookshops, the nicest evening walk in Cairo.' },
+      { id: 'sakkara', name: 'Sakkara & Dahshur', cat: 'trip', area: 'South of Giza', min: 75, band: 'trip', lat: 29.8712, lon: 31.2165,
+        blurb: 'The Step Pyramid and the Bent Pyramid with a fraction of Giza\u2019s crowds. A quiet, brilliant day.' },
+      { id: 'fayoum', name: 'Fayoum', cat: 'trip', area: 'Two hours south-west', min: 130, band: 'trip', lat: 29.3084, lon: 30.8428,
+        blurb: 'Lakes, waterfalls, desert and pottery villages. Leave at seven, back for dinner — we can arrange the driver.' },
+      { id: 'alex', name: 'Alexandria', cat: 'trip', area: 'On the coast', min: 165, band: 'trip', lat: 31.2001, lon: 29.9187,
+        blurb: 'Sea air, the Bibliotheca, seafood in sight of the Mediterranean. A long day by train.' }
+    ];
+
+    this.stories = {
+      perfect: { title: 'The one perfect day', note: 'Pyramids at dawn, the museum after, the Nile at dusk.', stops: ['pyramids', 'gem', 'nile'], paras: [
+        'Leave at seven. The road west is empty at that hour and you\u2019ll be standing at the foot of the Great Pyramid before the heat decides what kind of day it\u2019s going to be. Walk past the first two — everyone stops there — and keep going to the panorama point, where all nine sit in one frame and the desert simply starts.',
+        'By eleven you\u2019ll have had enough sun. The Grand Egyptian Museum is ten minutes away and mercifully cool. Eat there; don\u2019t be clever about lunch.',
+        'Drive into the city late afternoon and give the last hour of light to a felucca from the Zamalek side. Nothing happens on that boat — that\u2019s the point, after a day like this. Dinner in Zamalek, home by ten.'
+      ]},
+      fortyeight: { title: '48 hours in Cairo', note: 'The old city one day, the ancient one the next.', stops: ['citadel', 'khan', 'pyramids', 'gem'], paras: [
+        'Give day one to Islamic Cairo — the half most visitors skip and the half they remember. Start at the Citadel around three, when the light softens on the domes and the city lies out below you in a beige haze. Then walk down into Al-Muizz Street, a thousand years of stonework lit up after dark, and let it deliver you into Khan el-Khalili.',
+        'Tea at El Fishawy, buy something you\u2019ll argue about later, eat late. The market is at its best after nine.',
+        'Day two is the ancient one: pyramids first thing, the museum after lunch, a felucca if your legs hold. Two days isn\u2019t enough for Cairo, but in that order it feels like a story rather than a highlight reel.'
+      ]},
+      kids: { title: 'A day with kids', note: 'Short distances, cold drinks, an early exit.', stops: ['gem', 'pool', 'cfc'], paras: [
+        'The mistake is the pyramids. Hot, exposed, nowhere to sit — magnificent for adults, an ordeal for a seven-year-old. Go to the Grand Egyptian Museum instead: air-conditioned, and the mummies and chariots are exactly as gruesome and thrilling as children want them to be.',
+        'Be out by one. Lunch somewhere unambitious, then back to the compound for the pool, which runs until eight and will be the actual highlight of the trip according to everyone under twelve.',
+        'If the evening needs something, Festival City has the fountain show and a cinema, and nobody has to walk far.'
+      ]},
+      evening: { title: 'An evening, that\u2019s all', note: 'Four hours, no intention of driving to Giza.', stops: ['katameya', 'sachi', '30north'], paras: [
+        'Everything good is within fifteen minutes — the quiet luxury of staying out here. Downtown Katameya is the move: open-air, low-key, and it fills up around eight with locals rather than visitors.',
+        'Eat at Sachi if you want it to feel like an occasion; book ahead, especially Thursday. Otherwise wander — almost nothing in that complex is bad.',
+        'Finish with coffee at 30 North, which stays open later than you\u2019d expect, and be home in twelve minutes.'
+      ]},
+      slow: { title: 'A slow local day', note: 'Coffee, groceries, the pool, an early night.', stops: ['ovio', 'espresso', 'seoudi', 'pool'], paras: [
+        'Some days in Cairo shouldn\u2019t be spent in Cairo. Start at Ovio for a long breakfast on the terrace, then coffee at Espresso Lab in the same mall. A Spanish latte, sitting down, no plan.',
+        'Groceries at Seoudi on the way back, then cook. It\u2019s a good kitchen and the produce is better than it has any right to be.',
+        'The afternoon is the pool. The evening is the balcony. New Cairo is quiet in a way the rest of the city isn\u2019t, and a day of nothing here is a real thing to bring home.'
+      ]},
+      shopping: { title: 'Shopping & souks', note: 'The market for the stories, the mall for the sizes.', stops: ['khan', 'cfc', 'point90'], paras: [
+        'Khan el-Khalili is where you buy the things worth carrying: hand-hammered brass, cotton, spice, inlaid wood, the lanterns everybody swears they\u2019ll find room for. A slow smile and a willingness to walk away does most of the work. Go late afternoon, when it\u2019s cool and lit.',
+        'For anything with a size on the label, Cairo Festival City is fifteen minutes away with the full international lineup.',
+        'One honest note: anything sold as an antiquity isn\u2019t one, and taking real ones out of the country is illegal. Buy the beautiful new thing instead.'
+      ]}
+    };
+
+    this.hints = ['what should I do tonight?', 'somewhere for coffee', 'I have three hours', 'where\u2019s the wifi password?', 'is there anything for kids?', 'we want a big day out'];
+
+    this.state = { query: '', answer: this.openingAnswer(), thinking: false, selected: '', mapView: 'near', saved, trayOpen: false, copied: '', hintIdx: 0 };
+  }
+
+  greeting() {
+    const h = new Date().getHours();
+    if (h < 6) return { kicker: 'Very late', line: 'Still up? Ask away — we\u2019re here.' };
+    if (h < 11) return { kicker: 'Morning', line: 'Ahlan. What are we doing today?' };
+    if (h < 15) return { kicker: 'Afternoon', line: 'Too hot to be outside. Ask me something.' };
+    if (h < 19) return { kicker: 'Late afternoon', line: 'Best hour of the day. Where to?' };
+    return { kicker: 'Evening', line: 'What\u2019s the plan tonight?' };
+  }
+
+  openingAnswer() {
+    const h = new Date().getHours();
+    if (h >= 19 || h < 6) return { kind: 'places', tag: 'a start', title: 'Three easy evenings, all under fifteen minutes.', ids: ['katameya', 'sachi', '30north'], follow: ['what should I do tomorrow?', 'somewhere with kids', 'wifi'] };
+    if (h < 11) return { kind: 'places', tag: 'a start', title: 'Start with coffee, decide after.', ids: ['ovio', 'espresso', 'pool'], follow: ['one perfect day', 'the pyramids', 'wifi'] };
+    return { kind: 'places', tag: 'a start', title: 'Cool, indoors, and worth the drive.', ids: ['gem', 'point90', 'coptic'], follow: ['what about tonight?', 'one perfect day', 'door code'] };
+  }
+
+  intents() {
+    const d = this.d;
+    return [
+      { keys: ['tonight', 'evening', 'this evening', 'after work', 'drinks', 'dinner', 'tomorrow night'], make: () => ({ kind: 'story', tag: 'an evening', story: 'evening', follow: ['somewhere to eat', 'coffee', 'what about tomorrow?'] }) },
+      { keys: ['perfect day', 'one day', 'first time', 'first day', 'must see', 'what should i see', 'highlights'], make: () => ({ kind: 'story', tag: 'the big one', story: 'perfect', follow: ['48 hours', 'the pyramids', 'is it hot?'] }) },
+      { keys: ['48', 'two days', '2 days', 'weekend', 'short stay'], make: () => ({ kind: 'story', tag: 'two days', story: 'fortyeight', follow: ['one perfect day', 'khan el-khalili', 'shopping'] }) },
+      { keys: ['kid', 'kids', 'child', 'children', 'family', 'toddler', 'baby'], make: () => ({ kind: 'story', tag: 'with children', story: 'kids', follow: ['the pool', 'somewhere to eat', 'is it hot?'] }) },
+      { keys: ['slow', 'lazy', 'nothing', 'relax', 'stay in', 'rest', 'quiet day', 'do nothing'], make: () => ({ kind: 'story', tag: 'a slow one', story: 'slow', follow: ['coffee', 'groceries', 'what about tonight?'] }) },
+      { keys: ['shop', 'shopping', 'souk', 'buy', 'gift', 'souvenir', 'market'], make: () => ({ kind: 'story', tag: 'bringing things home', story: 'shopping', follow: ['khan el-khalili', 'is it safe to haggle?', 'cash'] }) },
+      { keys: ['coffee', 'cafe', 'café', 'espresso', 'latte', 'flat white'], make: () => ({ kind: 'places', tag: 'coffee', title: 'Two worth the short drive.', note: 'Both ten minutes out, both properly good.', ids: ['espresso', '30north'], follow: ['breakfast', 'what should I do tonight?'] }) },
+      { keys: ['eat', 'food', 'restaurant', 'lunch', 'hungry', 'breakfast', 'delivery', 'order in'], make: () => ({ kind: 'places', tag: 'eating', title: 'Where we\u2019d send a friend.', note: 'For delivery, everything here is on Talabat and Elmenus.', ids: ['ovio', 'zooba', 'sachi'], follow: ['coffee', 'groceries', 'what about tonight?'] }) },
+      { keys: ['grocery', 'groceries', 'supermarket', 'cook', 'food shopping', 'seoudi'], make: () => ({ kind: 'places', tag: 'supplies', title: 'Five minutes to a full supermarket.', ids: ['seoudi', 'gourmet'], follow: ['pharmacy', 'a slow local day'] }) },
+      { keys: ['pharmacy', 'medicine', 'chemist', 'sick', 'doctor', 'headache'], make: () => ({ kind: 'places', tag: 'help', title: 'Open around the clock, and they deliver.', note: 'El Ezaby\u2019s hotline is 19600 and they speak English. If it\u2019s more serious than a pharmacy, message us straight away.', ids: ['ezaby'], actions: [{ label: 'Message us', href: this.wa }], follow: ['emergency numbers', 'contact'] }) },
+      { keys: ['pyramid', 'giza', 'sphinx'], make: () => ({ kind: 'places', tag: 'the big one', title: 'Go at seven. Genuinely.', note: 'By ten the plateau is fully exposed and there is no shade anywhere on it. Pair it with the museum, ten minutes away, for the afternoon.', ids: ['pyramids', 'gem'], follow: ['one perfect day', 'is it hot?', 'getting around'] }) },
+      { keys: ['museum', 'gem', 'tutankhamun', 'antiquities', 'history'], make: () => ({ kind: 'places', tag: 'indoors', title: 'Four hours, minimum.', ids: ['gem', 'coptic'], follow: ['the pyramids', 'one perfect day'] }) },
+      { keys: ['khan', 'khalili', 'islamic cairo', 'citadel', 'mosque', 'old cairo', 'muizz'], make: () => ({ kind: 'places', tag: 'old cairo', title: 'Citadel first, then walk down into the market.', note: 'Shoulders and knees covered for the mosques; a scarf for the head in a prayer hall.', ids: ['citadel', 'khan'], follow: ['48 hours', 'shopping', 'what to wear'] }) },
+      { keys: ['nile', 'felucca', 'boat', 'sunset', 'river', 'zamalek'], make: () => ({ kind: 'places', tag: 'golden hour', title: 'An hour on the water, an hour before sunset.', ids: ['nile', 'zamalek'], follow: ['one perfect day', 'somewhere to eat'] }) },
+      { keys: ['day trip', 'out of the city', 'sakkara', 'dahshur', 'fayoum', 'alexandria', 'big day', 'excursion'], make: () => ({ kind: 'places', tag: 'further out', title: 'Three days out, in order of effort.', note: 'We can arrange a driver for any of them with a day\u2019s notice.', ids: ['sakkara', 'fayoum', 'alex'], actions: [{ label: 'Ask about a driver', href: this.wa }], follow: ['getting around', 'one perfect day'] }) },
+      { keys: ['three hours', '3 hours', 'two hours', 'few hours', 'half day', 'not much time', 'quick'], make: () => ({ kind: 'places', tag: 'short window', title: 'Three hours buys you New Cairo, not Giza.', note: 'Anything across the city is ninety minutes of driving before you\u2019ve seen a thing. Stay local and enjoy it.', ids: ['katameya', 'espresso', 'point90'], follow: ['coffee', 'somewhere to eat', 'what about tonight?'] }) },
+      { keys: ['pool', 'gym', 'swim', 'compound', 'wristband'], make: () => ({ kind: 'places', tag: 'downstairs', title: 'Eight in the morning until eight at night.', note: 'Wristbands are in the drawer by the front door; towels in your wardrobe. Your door code opens the gym.', ids: ['pool'], follow: ['a slow local day', 'somewhere with kids'] }) },
+      { keys: ['wifi', 'wi-fi', 'internet', 'password', 'network', 'online'], make: () => ({ kind: 'info', tag: 'the apartment', title: 'You\u2019re online in ten seconds.', lines: ['Signal reaches the balcony but weakens by the pool — there\u2019s compound guest WiFi down there.'], copyables: [{ k: 'Network', v: d.wifiSsid }, { k: 'Password', v: d.wifiPass }], follow: ['door code', 'how does the AC work?'] }) },
+      { keys: ['door', 'code', 'key', 'lock', 'get in', 'entry', 'which floor', 'apartment number'], make: () => ({ kind: 'info', tag: 'the apartment', title: 'The door opens on a code.', lines: ['Press the digits then #. It clicks twice — that\u2019s open.', 'You\u2019re in ' + d.floor + '. The same code works at the clubhouse gym.'], copyables: [{ k: 'Door code', v: d.doorCode }], follow: ['wifi', 'the pool'] }) },
+      { keys: ['check in', 'check out', 'checkout', 'checkin', 'arrive', 'leaving', 'departure', 'late checkout'], make: () => ({ kind: 'info', tag: 'the apartment', title: 'In after ' + d.checkIn + ', out by ' + d.checkOut + '.', lines: ['Earlier or later is usually possible — ask and we\u2019ll check the calendar.', 'On the way out: ACs and lights off, wristbands and remotes on the dining table, pull the door closed behind you.'], actions: [{ label: 'Ask about my times', href: this.wa }], follow: ['contact', 'house rules'] }) },
+      { keys: ['ac', 'a/c', 'air con', 'aircon', 'hot water', 'heater', 'washing', 'laundry', 'machine', 'tv', 'netflix', 'how does'], make: () => ({ kind: 'info', tag: 'the apartment', title: 'How the place works.', lines: ['AC — one split unit per room, remotes on the coffee table. 23–24°C is the sweet spot; below that they drip. Off when you go out.', 'Hot water — the bathroom switch with the red light. Leave it on; it takes a few minutes.', 'Washer — kitchen, detergent under the sink, program 3 handles almost everything. Rack on the balcony.', 'TV — Netflix and YouTube are on our house profile. Use your own accounts freely, just log out before you leave.'], follow: ['wifi', 'house rules', 'contact'] }) },
+      { keys: ['rules', 'smoking', 'smoke', 'noise', 'party', 'quiet', 'pets', 'guests'], make: () => ({ kind: 'info', tag: 'the apartment', title: 'Four small asks.', lines: ['Smoking on the balcony, not indoors.', 'The compound asks for quiet after 11pm — sound carries here.', 'Gatherings are welcome; parties aren\u2019t. If your plans grow, tell us first.', 'Treat it like your own place — because for now, it is.'], follow: ['check out', 'contact'] }) },
+      { keys: ['tip', 'tipping', 'baksheesh', 'cash', 'money', 'card', 'atm', 'pay'], make: () => ({ kind: 'info', tag: 'practical', title: 'Carry small notes.', lines: ['Cards work almost everywhere in New Cairo and almost nowhere in the souk.', 'Baksheesh is part of the fabric, not a scam: 10–20 EGP for a bag carried or a door held, 10% at a restaurant if service isn\u2019t on the bill.', 'Small and frequent beats large and rare — and nobody ever has change.'], follow: ['getting around', 'shopping'] }) },
+      { keys: ['uber', 'careem', 'taxi', 'getting around', 'transport', 'drive', 'car', 'airport', 'traffic'], make: () => ({ kind: 'info', tag: 'practical', title: 'Set the pickup at Gate 2.', lines: ['Uber and Careem both work well and spare you the fare negotiation. Gate 2 is the point drivers find easily.', 'Downtown is 30–45 minutes depending entirely on the hour. The airport is about 40.', 'Want to drive yourself? We can have a rental delivered with a day\u2019s notice.'], actions: [{ label: 'Gate 2 on maps', href: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Stone Residence New Cairo Gate 2') }], follow: ['a day trip', 'contact'] }) },
+      { keys: ['wear', 'dress', 'clothes', 'modest', 'scarf', 'shorts'], make: () => ({ kind: 'info', tag: 'practical', title: 'Relaxed here, covered there.', lines: ['New Cairo is easy — you\u2019ll see everything.', 'For mosques and the old city, shoulders and knees covered for everyone, and a scarf for the head if you\u2019re a woman entering a prayer hall.', 'Friday midday is the big prayer: roads empty then flood, and mosques close to visitors for an hour.'], follow: ['old cairo', 'is it hot?'] }) },
+      { keys: ['hot', 'heat', 'weather', 'summer', 'temperature', 'when to go', 'season'], make: () => ({ kind: 'info', tag: 'practical', title: 'Before eleven, or after five.', lines: ['In summer the hours between belong to museums, malls and the pool.', 'Drink bottled, not tap, and take more water than you think you need.', 'October to April is the good half of the year — mornings on the plateau are genuinely cool.'], follow: ['the pyramids', 'the pool'] }) },
+      { keys: ['arabic', 'language', 'speak', 'phrase', 'say', 'english'], make: () => ({ kind: 'info', tag: 'practical', title: 'Six words that go a long way.', lines: ['ahlan — hello. shukran — thank you. min fadlak — please.', 'la shukran — no thank you. It is the single most useful phrase in the country.', 'kam? — how much. ghali — expensive, said with a smile.', 'English is widely spoken in New Cairo and in anywhere touristed.'], follow: ['shopping', 'tipping'] }) },
+      { keys: ['emergency', 'police', 'ambulance', 'fire', 'security', 'urgent', 'help'], make: () => ({ kind: 'info', tag: 'urgent', title: 'Numbers that answer immediately.', lines: ['Police 122 · Ambulance 123 · Fire 180 · Tourist police 126.', 'Compound security: ' + d.security + ' — fastest for anything at the gate or in the building.', 'Then message us. Any hour, any problem.'], actions: [{ label: 'Call security', href: 'tel:' + (d.security || '').replace(/[^\d+]/g, '') }, { label: 'Message us', href: this.wa }], follow: ['pharmacy', 'contact'] }) },
+      { keys: ['contact', 'whatsapp', 'host', 'human', 'call', 'message', 'you', 'jood'], make: () => ({ kind: 'info', tag: 'us', title: 'A real person answers.', lines: ['9am – 11pm every day of your stay, and always for anything urgent.', 'A table somewhere that doesn\u2019t book online, a driver for the day, a dripping AC at 11pm. That\u2019s the whole point of JOOD.'], copyables: [{ k: 'WhatsApp', v: d.whatsapp }], actions: [{ label: 'Open WhatsApp', href: this.wa }], follow: ['a day trip', 'somewhere to eat'] }) },
+      { keys: ['hi', 'hello', 'hey', 'ahlan', 'salam', 'thanks', 'thank you'], make: () => Object.assign(this.openingAnswer(), { tag: 'ahlan' }) }
+    ];
+  }
+
+  resolve(raw) {
+    const q = (raw || '').toLowerCase().trim();
+    if (!q) return null;
+    let best = null, score = 0;
+    this.intents().forEach((it) => {
+      it.keys.forEach((k) => {
+        if (q.indexOf(k) !== -1 && k.length + (q === k ? 8 : 0) > score) { score = k.length + (q === k ? 8 : 0); best = it; }
+      });
+    });
+    if (best) return best.make();
+    const hit = this.places.filter((p) => q.indexOf(p.name.toLowerCase()) !== -1 || p.name.toLowerCase().indexOf(q) !== -1)[0];
+    if (hit) return { kind: 'places', tag: 'found it', title: hit.name + '.', ids: [hit.id], follow: ['what else is nearby?', 'one perfect day'] };
+    return { kind: 'info', tag: 'not sure', title: 'That one I\u2019d rather not guess at.', lines: ['Try a word like coffee, tonight, pyramids, kids, wifi, or check-out — or just ask a human.'], actions: [{ label: 'Message us', href: this.wa }], follow: ['what should I do tonight?', 'one perfect day'] };
+  }
+
+  ask(raw) {
+    const q = (raw || '').trim();
+    if (!q) return;
+    clearTimeout(this._t);
+    this.setState({ thinking: true, query: '', selected: '' });
+    this._t = setTimeout(() => {
+      const answer = this.resolve(q);
+      const ids = this.answerIds(answer);
+      const far = ids.some((id) => { const p = this.byId(id); return p && (p.band === 'far' || p.band === 'trip'); });
+      this.setState({ answer, thinking: false, mapView: far ? 'city' : 'near' });
+    }, 420);
+  }
+
+  byId(id) { return this.places.filter((p) => p.id === id)[0]; }
+
+  answerIds(a) {
+    if (!a) return [];
+    if (a.kind === 'story') return (this.stories[a.story] || {}).stops || [];
+    return a.ids || [];
+  }
+
+  toggleSave(id) {
+    this.setState((s) => {
+      const has = s.saved.indexOf(id) !== -1;
+      const saved = has ? s.saved.filter((x) => x !== id) : s.saved.concat([id]);
+      try { localStorage.setItem(this.key, JSON.stringify(saved)); } catch (e) {}
+      return { saved };
+    });
+  }
+
+  copy(k, v) {
+    try { navigator.clipboard.writeText(v); } catch (e) {}
+    this.setState({ copied: k });
+    clearTimeout(this._c);
+    this._c = setTimeout(() => this.setState({ copied: '' }), 1700);
+  }
+
+  componentDidMount() {
+    this._h = setInterval(() => this.setState((s) => ({ hintIdx: (s.hintIdx + 1) % this.hints.length })), 4200);
+  }
+
+  componentWillUnmount() { clearInterval(this._h); clearTimeout(this._t); clearTimeout(this._c); }
+
+  mapUrl(n) { return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(n + ' Cairo Egypt'); }
+
+  driveLabel(m) {
+    if (m < 4) return 'downstairs';
+    if (m < 60) return m + ' min';
+    return (Math.round(m / 30) / 2) + ' hr';
+  }
+
+  renderVals() {
+    const s = this.state, d = this.d, a = s.answer;
+    const g = this.greeting();
+    const story = a && a.kind === 'story' ? this.stories[a.story] : null;
+    const ids = this.answerIds(a);
+    const isSaved = (id) => s.saved.indexOf(id) !== -1;
+
+    const VIEWS = {
+      near: { lon0: 31.372, lon1: 31.508, lat0: 29.986, lat1: 30.066, label: 'New Cairo', scale: '3 km' },
+      city: { lon0: 31.055, lon1: 31.515, lat0: 29.900, lat1: 30.155, label: 'Greater Cairo', scale: '10 km' }
+    };
+    const v = VIEWS[s.mapView] || VIEWS.near;
+    const px = (p) => ((p.lon - v.lon0) / (v.lon1 - v.lon0)) * 100;
+    const py = (p) => ((v.lat1 - p.lat) / (v.lat1 - v.lat0)) * 100;
+    const inside = (p) => p.lon >= v.lon0 && p.lon <= v.lon1 && p.lat >= v.lat0 && p.lat <= v.lat1;
+
+    const highlighted = ids.length > 0;
+    const pins = [{
+      x: px(this.base).toFixed(1), y: py(this.base).toFixed(1), name: 'You are here', z: 30, ping: true,
+      dot: '#FF6037', ring: '#351E1C', size: '12px', fs: '10px', labelColor: '#351E1C', opacity: 1,
+      title: 'Your apartment', click: () => this.setState({ selected: '' })
+    }].concat(this.places.filter(inside).map((p) => {
+      const on = ids.indexOf(p.id) !== -1;
+      const sel = s.selected === p.id;
+      const big = p.cat === 'icon';
+      return {
+        x: px(p).toFixed(1), y: py(p).toFixed(1), name: p.name, ping: on && !sel,
+        z: sel ? 28 : on ? 24 : big ? 14 : 10,
+        opacity: highlighted && !on && !sel ? 0.34 : 1,
+        dot: sel ? '#351E1C' : on ? '#FF6037' : big ? '#733635' : '#F5F4ED',
+        ring: sel ? '#351E1C' : on ? '#FF6037' : big ? '#733635' : 'rgba(53,30,28,0.5)',
+        size: sel ? '14px' : on ? '12px' : big ? '10px' : '7px',
+        fs: sel || on || big ? '10px' : '9px',
+        labelColor: sel ? '#351E1C' : on ? '#FF6037' : 'rgba(53,30,28,0.7)',
+        title: p.name,
+        click: () => this.setState({ selected: p.id })
+      };
+    }));
+
+    const threadPts = ids.map((id) => this.byId(id)).filter((p) => p && inside(p));
+    const threads = threadPts.length > 1
+      ? [{ d: threadPts.map((p, i) => (i ? 'L' : 'M') + px(p).toFixed(2) + ' ' + (py(p) * 0.64).toFixed(2)).join(' ') }]
+      : [];
+
+    const nileRaw = [{ lat: 29.900, lon: 31.238 }, { lat: 29.960, lon: 31.244 }, { lat: 30.005, lon: 31.229 }, { lat: 30.035, lon: 31.226 }, { lat: 30.062, lon: 31.221 }, { lat: 30.095, lon: 31.236 }, { lat: 30.155, lon: 31.248 }].filter(inside);
+    const nilePath = nileRaw.length > 1 ? nileRaw.map((p, i) => (i ? 'L' : 'M') + px(p).toFixed(2) + ' ' + (py(p) * 0.64).toFixed(2)).join(' ') : '';
+
+    const roadRaw = s.mapView === 'city'
+      ? [[{ lat: 30.13, lon: 31.19 }, { lat: 30.03, lon: 31.13 }, { lat: 29.93, lon: 31.24 }, { lat: 29.99, lon: 31.40 }, { lat: 30.10, lon: 31.38 }, { lat: 30.13, lon: 31.19 }], [{ lat: 30.045, lon: 31.235 }, { lat: 30.020, lon: 31.340 }, { lat: 30.015, lon: 31.440 }]]
+      : [[{ lat: 30.062, lon: 31.380 }, { lat: 30.010, lon: 31.430 }, { lat: 29.990, lon: 31.500 }], [{ lat: 30.060, lon: 31.470 }, { lat: 30.005, lon: 31.395 }]];
+    const roads = roadRaw.map((line) => ({ d: line.map((p, i) => (i ? 'L' : 'M') + px(p).toFixed(2) + ' ' + (py(p) * 0.64).toFixed(2)).join(' ') }));
+
+    const districtRaw = s.mapView === 'city'
+      ? [{ name: 'Giza', lat: 30.010, lon: 31.150 }, { name: 'Downtown', lat: 30.058, lon: 31.250 }, { name: 'Maadi', lat: 29.958, lon: 31.262 }, { name: 'New Cairo', lat: 30.042, lon: 31.470 }, { name: 'Heliopolis', lat: 30.100, lon: 31.335 }]
+      : [{ name: '90th Street', lat: 30.019, lon: 31.424 }, { name: 'Katameya', lat: 30.004, lon: 31.458 }, { name: 'Fifth Settlement', lat: 30.056, lon: 31.408 }];
+    const districts = districtRaw.filter(inside).map((p) => ({ name: p.name, x: px(p).toFixed(1), y: py(p).toFixed(1) }));
+
+    const selPlace = s.selected ? this.byId(s.selected) : null;
+    const det = selPlace ? {
+      name: selPlace.full || selPlace.name, area: selPlace.area, blurb: selPlace.blurb,
+      drive: this.driveLabel(selPlace.min) + ' away',
+      hasPhoto: !!selPlace.photo, photo: selPlace.photo || '', slotId: 'cc-' + selPlace.id,
+      hasFacts: !!selPlace.hour, hour: selPlace.hour || '', ticket: selPlace.ticket || '',
+      hasTip: !!selPlace.tip, tip: selPlace.tip || '',
+      map: this.mapUrl(selPlace.full || selPlace.name),
+      save: () => this.toggleSave(selPlace.id),
+      saveLabel: isSaved(selPlace.id) ? 'On your list' : 'Save to trip list',
+      saveMark: isSaved(selPlace.id) ? '✓' : '＋',
+      saveBg: isSaved(selPlace.id) ? '#FF6037' : 'transparent',
+      saveFg: '#351E1C',
+      saveBorder: isSaved(selPlace.id) ? '#FF6037' : 'rgba(53,30,28,0.22)',
+      close: () => this.setState({ selected: '' })
+    } : {};
+
+    const picks = (a && a.kind !== 'info' ? ids : []).map((id, i) => {
+      const p = this.byId(id);
+      if (!p) return null;
+      const on = isSaved(id);
+      return {
+        n: String(i + 1).padStart(2, '0'), name: p.name, blurb: p.blurb,
+        drive: this.driveLabel(p.min),
+        numColor: s.selected === id ? '#FF6037' : 'rgba(53,30,28,0.4)',
+        rowBg: s.selected === id ? 'rgba(255,96,55,0.07)' : 'transparent',
+        focus: () => this.setState({ selected: id }),
+        save: () => this.toggleSave(id),
+        saveTitle: on ? 'Remove from trip list' : 'Save to trip list',
+        saveMark: on ? '✓' : '＋',
+        saveBg: on ? '#FF6037' : 'transparent',
+        saveFg: '#351E1C',
+        saveBorder: on ? '#FF6037' : 'rgba(53,30,28,0.22)'
+      };
+    }).filter(Boolean);
+
+    const copyables = ((a && a.copyables) || []).map((c) => ({
+      k: c.k, v: c.v,
+      flash: s.copied === c.k,
+      label: s.copied === c.k ? 'copied' : 'tap to copy',
+      kColor: '#A0C9CB', labelColor: '#FF6037',
+      copy: () => this.copy(c.k, c.v)
+    }));
+
+    const savedPlaces = s.saved.map((id) => this.byId(id)).filter(Boolean);
+    let tripMapsLink = 'https://www.google.com/maps';
+    if (savedPlaces.length === 1) tripMapsLink = this.mapUrl(savedPlaces[0].name);
+    else if (savedPlaces.length > 1) {
+      const names = savedPlaces.map((p) => encodeURIComponent(p.name + ' Cairo'));
+      tripMapsLink = 'https://www.google.com/maps/dir/?api=1&origin=' + encodeURIComponent('Stone Residence New Cairo') +
+        '&destination=' + names[names.length - 1] + '&waypoints=' + names.slice(0, -1).join('%7C');
+    }
+
+    return {
+      d,
+      greetKicker: g.kicker, greetLine: g.line,
+      query: s.query, placeholder: this.hints[s.hintIdx],
+      inputRef: (el) => { this._input = el; },
+      onChange: (e) => this.setState({ query: e.target.value }),
+      onSubmit: (e) => { e.preventDefault(); this.ask(this.state.query); },
+      surprise: () => {
+        const pool = ['one perfect day', 'a day trip', 'khan el-khalili', 'somewhere to eat', 'a slow day', 'the nile at sunset', 'shopping'];
+        this.ask(pool[Math.floor(Math.random() * pool.length)]);
+      },
+      chips: ['tonight', 'coffee', 'eat', 'with kids', 'the pyramids', 'a day out', 'wifi', 'check-out'].map((label) => ({
+        label, bg: 'transparent', border: 'rgba(53,30,28,0.22)', fg: '#351E1C', ask: () => this.ask(label)
+      })),
+      thinking: s.thinking,
+      hasAnswer: !!a && !s.thinking,
+      answerTitle: story ? story.title : (a && a.title) || '',
+      answerTag: (a && a.tag) || '',
+      hasNote: !!(story ? story.note : a && a.note),
+      answerNote: story ? story.note : (a && a.note) || '',
+      isStory: !!story,
+      story: story ? story.paras.map((text) => ({ text })) : [],
+      hasLines: !!(a && a.lines && a.lines.length),
+      lines: ((a && a.lines) || []).map((text, i) => ({ n: String(i + 1).padStart(2, '0'), text })),
+      hasCopyables: copyables.length > 0, copyables,
+      hasPicks: picks.length > 0, picks,
+      hasActions: !!(a && a.actions && a.actions.length), actions: (a && a.actions) || [],
+      hasFollow: !!(a && a.follow && a.follow.length),
+      follow: ((a && a.follow) || []).map((label) => ({ label, ask: () => this.ask(label) })),
+      mapViews: ['near', 'city'].map((id) => {
+        const on = s.mapView === id;
+        return { label: VIEWS[id].label, bg: on ? '#351E1C' : 'transparent', fg: on ? '#F5F4ED' : '#351E1C', border: on ? '#351E1C' : 'rgba(53,30,28,0.22)', pick: () => this.setState({ mapView: id }) };
+      }),
+      mapHint: selPlace ? selPlace.name : highlighted ? 'lit pins are the answer' : 'tap a pin',
+      pins, districts, roads, threads, nilePath, hasNile: !!nilePath,
+      scaleLabel: v.scale, scaleWidth: s.mapView === 'city' ? '48px' : '60px',
+      hasDetail: !!selPlace, noDetail: !selPlace, det,
+      savedCount: s.saved.length,
+      trayBtnBg: s.trayOpen ? '#FF6037' : 'transparent',
+      trayBtnFg: '#351E1C',
+      trayOpen: s.trayOpen, trayEmpty: s.saved.length === 0, trayHas: s.saved.length > 0,
+      savedList: savedPlaces.map((p, i) => ({ n: String(i + 1).padStart(2, '0'), name: p.name, area: p.area, drive: this.driveLabel(p.min), remove: () => this.toggleSave(p.id) })),
+      tripMapsLink,
+      tripWaLink: 'https://wa.me/?text=' + encodeURIComponent('My Cairo list (via JOOD):\n\n' + savedPlaces.map((p, i) => (i + 1) + '. ' + p.name + ' — ' + p.area + ' (' + this.driveLabel(p.min) + ')').join('\n')),
+      toggleTray: () => this.setState((st) => ({ trayOpen: !st.trayOpen })),
+      closeTray: () => this.setState({ trayOpen: false }),
+      clearTrip: () => { try { localStorage.setItem(this.key, '[]'); } catch (e) {} this.setState({ saved: [] }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

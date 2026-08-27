@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160"><rect width="160" height="160" fill="#351E1C"/><text x="80" y="96" font-family="Georgia,serif" font-style="italic" font-size="54" fill="#FF6037" text-anchor="middle">J</text></svg></template>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Amiri:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+html,body{margin:0;padding:0;background:#F5F4ED;height:100%;overflow:hidden}
+*{box-sizing:border-box}
+a{color:inherit}
+::selection{background:#FF6037;color:#F5F4ED}
+@keyframes jood-copy-pop{0%{transform:scale(0.6);opacity:0}55%{transform:scale(1.15);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes jood-swipe-hint{0%,100%{transform:translateY(-50%) translateX(0)}50%{transform:translateY(-50%) translateX(5px)}}
+.jood-pager{scrollbar-width:none}
+.jood-pager::-webkit-scrollbar{display:none}
+</style>
+</helmet>
+
+<x-import component-from-global-scope="image-slot" from="./image-slot.js" hint-size="0,0" style="position:absolute;width:0;height:0;overflow:hidden"></x-import>
+<div style="position:fixed;inset:0;width:100vw;height:100vh;background:#F5F4ED;overflow:hidden;font-family:'Geist','IBM Plex Sans Arabic',sans-serif">
+
+      <!-- persistent top overlay: progress segments + logo mark + lang toggle (mirrors for RTL) -->
+      <div style="position:absolute;top:calc(env(safe-area-inset-top,0px) + 10px);left:16px;right:16px;z-index:30;display:flex;flex-direction:column;gap:12px;pointer-events:none">
+        <div style="display:flex;gap:4px">
+          <sc-for list="{{ dots }}" as="dot" hint-placeholder-count="9">
+            <div onClick="{{ dot.go }}" style="pointer-events:auto;cursor:pointer;flex:1;height:3px;border-radius:3px;background:{{ dot.track }};overflow:hidden">
+              <div style="height:100%;width:{{ dot.fill }};background:#FF6037;border-radius:3px;transition:width 0.45s cubic-bezier(.16,1,.3,1)"></div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-direction:{{ topRowDir }};justify-content:space-between;align-items:center">
+          <div style="pointer-events:auto;display:flex;align-items:center"><img src="assets/jood-logo-coral.png" alt="JOOD" style="height:34px;width:auto;display:block;filter:drop-shadow(0 2px 8px rgba(0,0,0,0.3))"></div>
+          <div style="pointer-events:auto;display:flex;align-items:center;gap:10px">
+            <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.06em;color:{{ topRowTextColor }};opacity:0.75">{{ counter }}</span>
+            <button onClick="{{ toggleLang }}" style="background:{{ logoBg }};backdrop-filter:blur(14px) saturate(180%);-webkit-backdrop-filter:blur(14px) saturate(180%);border:1px solid rgba(255,255,255,0.35);color:{{ topRowTextColor }};font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-size:12px;padding:9px 16px;border-radius:999px;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,0.15)" style-active="transform:scale(0.94)">{{ langBtn }}</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- prev / next glass arrows -->
+      <sc-if value="{{ showPrev }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ goPrev }}" aria-label="Previous" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:35;width:40px;height:40px;border-radius:50%;background:rgba(53,30,28,0.35);backdrop-filter:blur(14px) saturate(180%);-webkit-backdrop-filter:blur(14px) saturate(180%);border:1px solid rgba(255,255,255,0.3);color:#F5F4ED;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;line-height:1" style-active="transform:translateY(-50%) scale(0.9)">‹</button>
+      </sc-if>
+      <sc-if value="{{ showNext }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ goNext }}" aria-label="Next" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:35;width:40px;height:40px;border-radius:50%;background:rgba(53,30,28,0.35);backdrop-filter:blur(14px) saturate(180%);-webkit-backdrop-filter:blur(14px) saturate(180%);border:1px solid rgba(255,255,255,0.3);color:#F5F4ED;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;line-height:1;{{ swipeHintStyle }}" style-active="transform:translateY(-50%) scale(0.9)">›</button>
+      </sc-if>
+
+      <!-- horizontal pager -->
+      <div ref="{{ pagerRef }}" onScroll="{{ onPagerScroll }}" class="jood-pager" style="position:absolute;inset:0;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory">
+
+        <!-- ===== 0 WELCOME (hero, full-bleed) ===== -->
+        <div dir="{{ dir }}" style="flex:0 0 100%;height:100%;scroll-snap-align:start;position:relative;overflow:hidden">
+          <image-slot id="hero-photo" shape="rect" src="uploads/View-of-the-Mosque-Sultan-Hassan-in-Cairo.webp" placeholder="{{ t.heroPlaceholder }}" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(53,30,28,0.05) 0%,rgba(53,30,28,0.15) 38%,rgba(53,30,28,0.94) 82%);pointer-events:none"></div>
+
+          <div style="position:absolute;left:20px;right:20px;bottom:calc(env(safe-area-inset-bottom,0px) + 100px);{{ fx0 }}">
+            <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#FF9776;margin-bottom:12px">{{ t.metaA2 }}</div>
+            <h1 style="font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:700;letter-spacing:-0.02em;font-size:50px;line-height:0.98;letter-spacing:-0.03em;margin:0 0 12px;color:#F5F4ED">{{ t.heroA }} <em style="color:#FF6037;font-style:normal;font-weight:800">{{ t.heroB }}</em></h1>
+            <p style="margin:0 0 20px;font-size:14.5px;line-height:1.55;color:rgba(245,244,237,0.82);max-width:300px">{{ t.heroSub }}</p>
+            <a href="{{ waLink }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:rgba(245,244,237,0.16);backdrop-filter:blur(16px) saturate(180%);-webkit-backdrop-filter:blur(16px) saturate(180%);border:1px solid rgba(245,244,237,0.4);color:#F5F4ED;text-decoration:none;font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:600;font-size:14px;padding:13px 22px;border-radius:999px" style-active="transform:scale(0.96)">{{ t.heroCta }} →</a>
+          </div>
+        </div>
+
+        <!-- ===== 1 ESSENTIALS ===== -->
+        <div dir="{{ dir }}" style="flex:0 0 100%;height:100%;scroll-snap-align:start;overflow-y:auto;background:#351E1C;color:#F5F4ED">
+          <div style="padding:76px 20px 40px;{{ fx1 }}">
+            <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#A0C9CB;margin-bottom:10px">{{ t.unitEyebrow }}</div>
+            <h2 style="font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:700;letter-spacing:-0.02em;font-size:38px;line-height:1.02;margin:0 0 28px">{{ t.unitTitleA }} <em style="color:#FF6037;font-style:normal;font-weight:800">{{ t.unitTitleB }}</em></h2>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid rgba(245,244,237,0.18)">
+              <div style="padding:16px 12px 16px 0;border-bottom:1px solid rgba(245,244,237,0.14)">
+                <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#A0C9CB;margin-bottom:6px">{{ t.lblUnit }}</div>
+                <div style="font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:600;font-size:22px">{{ d.unitName }}</div>
+              </div>
+              <div style="padding:16px 0 16px 12px;border-bottom:1px solid rgba(245,244,237,0.14)">
+                <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#A0C9CB;margin-bottom:6px">{{ t.lblCheckIn }}</div>
+                <div style="font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:600;font-size:22px">{{ d.checkIn }}</div>
+              </div>
+              <div style="padding:16px 12px 16px 0">
+                <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#A0C9CB;margin-bottom:6px">{{ t.lblFloor }}</div>
+                <div style="font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:600;font-size:22px">{{ d.floor }}</div>
+              </div>
+              <div style="padding:16px 0 16px 12px">
+                <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#A0C9CB;margin-bottom:6px">{{ t.lblCheckOut }}</div>
+                <div style="font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:600;font-size:22px">{{ d.checkOut }}</div>
+              </div>
+            </div>
+
+            <div style="margin-top:28px;padding:20px;border:1px solid rgba(245,244,237,0.18);border-radius:16px;display:flex;flex-direction:column;gap:18px">
+              <div>
+                <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#A0C9CB;margin-bottom:8px">{{ t.lblWifi }}</div>
+                <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:16px">{{ d.wifiSsid }}</div>
+              </div>
+              <div>
+                <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#A0C9CB;margin-bottom:8px">{{ t.lblPass }}</div>
+                <button onClick="{{ copyWifi }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;background:none;border:none;padding:0;cursor:pointer;color:#F5F4ED;text-align:start">
+                  <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:16px;border-bottom:1px dashed rgba(160,201,203,0.6);padding-bottom:2px">{{ d.wifiPass }}</span>
+                  <span style="display:inline-flex;align-items:center;gap:5px;font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#FF6037">
+                    <sc-if value="{{ wifiJustCopied }}" hint-placeholder-val="{{ false }}"><span style="display:inline-block;animation:jood-copy-pop 0.4s ease">✓</span></sc-if>
+                    <span>{{ wifiCopyLabel }}</span>
+                  </span>
+                </button>
+              </div>
+              <div>
+                <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#A0C9CB;margin-bottom:8px">{{ t.lblDoor }}</div>
+                <button onClick="{{ copyCode }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;background:none;border:none;padding:0;cursor:pointer;color:#F5F4ED;text-align:start">
+                  <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:16px;border-bottom:1px dashed rgba(160,201,203,0.6);padding-bottom:2px">{{ d.doorCode }}</span>
+                  <span style="display:inline-flex;align-items:center;gap:5px;font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#FF6037">
+                    <sc-if value="{{ codeJustCopied }}" hint-placeholder-val="{{ false }}"><span style="display:inline-block;animation:jood-copy-pop 0.4s ease">✓</span></sc-if>
+                    <span>{{ codeCopyLabel }}</span>
+                  </span>
+                </button>
+              </div>
+              <div style="display:flex;align-items:center;gap:14px;padding-top:6px;border-top:1px solid rgba(245,244,237,0.14)">
+                {{ qrImg }}
+                <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:#A0C9CB;max-width:150px;line-height:1.6">{{ t.qrCaption }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== 2 CHECKLIST ===== -->
+        <div dir="{{ dir }}" style="flex:0 0 100%;height:100%;scroll-snap-align:start;overflow-y:auto;background:#F5F4ED">
+          <div style="padding:76px 20px 40px;{{ fx2 }}">
+            <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#FF6037;margin-bottom:10px">{{ t.checklistEyebrow }}</div>
+            <h2 style="font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:700;letter-spacing:-0.02em;font-size:38px;line-height:1.02;margin:0 0 24px;color:#351E1C">{{ t.checklistTitleA }} <em style="color:#FF6037;font-style:normal;font-weight:800">{{ t.checklistTitleB }}</em></h2>
+            <div style="border-top:1px solid rgba(53,30,28,0.18)">
+              <sc-for list="{{ checklist }}" as="c" hint-placeholder-count="5">
+                <button onClick="{{ c.toggle }}" style="width:100%;display:flex;gap:16px;align-items:center;padding:16px 0;border:none;border-bottom:1px solid rgba(53,30,28,0.12);background:none;cursor:pointer;text-align:start">
+                  <span style="flex:0 0 auto;width:26px;height:26px;border-radius:50%;border:2px solid {{ c.ringColor }};background:{{ c.fillColor }};display:flex;align-items:center;justify-content:center;transition:all 0.25s ease">
+                    <sc-if value="{{ c.checked }}" hint-placeholder-val="{{ false }}"><span style="color:#F5F4ED;font-size:13px;font-weight:700">✓</span></sc-if>
+                  </span>
+                  <span style="color:{{ c.textColor }};font-size:15px;text-decoration:{{ c.strike }};transition:color 0.25s ease">{{ c.text }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== 3 HOUSE RULES ===== -->
+        <div dir="{{ dir }}" style="flex:0 0 100%;height:100%;scroll-snap-align:start;overflow-y:auto;background:#F5F4ED">
+          <div style="padding:76px 20px 40px;{{ fx3 }}">
+            <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#FF6037;margin-bottom:10px">{{ t.rulesEyebrow }}</div>
+            <h2 style="font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:700;letter-spacing:-0.02em;font-size:38px;line-height:1.02;margin:0 0 12px;color:#351E1C">{{ t.rulesTitleA }} <em style="color:#FF6037;font-style:normal;font-weight:800">{{ t.rulesTitleB }}</em></h2>
+            <p style="margin:0 0 24px;color:rgba(53,30,28,0.7);font-size:14.5px">{{ t.rulesIntro }}</p>
+            <div style="border-top:1px solid rgba(53,30,28,0.18)">
+              <sc-for list="{{ rules }}" as="r" hint-placeholder-count="4">
+                <div style="display:flex;gap:16px;align-items:baseline;padding:14px 0;border-bottom:1px solid rgba(53,30,28,0.12)">
+                  <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#733635">{{ r.n }}</span>
+                  <span style="color:rgba(53,30,28,0.85);font-size:15px">{{ r.text }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== 4 APARTMENT TIPS ===== -->
+        <div dir="{{ dir }}" style="flex:0 0 100%;height:100%;scroll-snap-align:start;overflow-y:auto;background:#F5F4ED">
+          <div style="padding:76px 20px 40px;{{ fx4 }}">
+            <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#FF6037;margin-bottom:10px">{{ t.tipsEyebrow }}</div>
+            <h2 style="font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:700;letter-spacing:-0.02em;font-size:38px;line-height:1.02;margin:0 0 24px;color:#351E1C">{{ t.tipsTitleA }} <em style="color:#FF6037;font-style:normal;font-weight:800">{{ t.tipsTitleB }}</em></h2>
+            <div style="border-top:1px solid rgba(53,30,28,0.18)">
+              <sc-for list="{{ tips }}" as="tip" hint-placeholder-count="4">
+                <div style="border-bottom:1px solid rgba(53,30,28,0.18)">
+                  <button onClick="{{ tip.toggle }}" style="width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;background:none;border:none;padding:16px 0;cursor:pointer;text-align:start;color:#351E1C">
+                    <span style="font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:600;font-size:21px">{{ tip.q }}</span>
+                    <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:18px;color:#FF6037">{{ tip.mark }}</span>
+                  </button>
+                  <sc-if value="{{ tip.open }}" hint-placeholder-val="{{ false }}">
+                    <p style="margin:0;padding:0 0 18px;color:rgba(53,30,28,0.8);font-size:14.5px">{{ tip.a }}</p>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== 5 NEIGHBOURHOOD (full-bleed photo, glass text card) ===== -->
+        <div dir="{{ dir }}" style="flex:0 0 100%;height:100%;scroll-snap-align:start;position:relative;overflow-y:auto">
+          <image-slot id="hood-photo" shape="rect" src="uploads/images.jpeg" placeholder="{{ t.hoodPlaceholder }}" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(53,30,28,0.1) 0%,rgba(53,30,28,0.35) 46%,rgba(53,30,28,0.97) 78%);pointer-events:none"></div>
+          <div style="position:absolute;left:0;right:0;bottom:0;padding:24px 20px 44px;color:#F5F4ED;{{ fx5 }}">
+            <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#A0C9CB;margin-bottom:10px">{{ t.hoodEyebrow }}</div>
+            <h2 style="font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:700;letter-spacing:-0.02em;font-size:34px;line-height:1.05;margin:0 0 14px">{{ t.hoodTitleA }} <em style="color:#FF6037;font-style:normal;font-weight:800">{{ t.hoodTitleB }}</em></h2>
+            <p style="margin:0 0 14px;color:rgba(245,244,237,0.85);font-size:14px">{{ t.hood1 }}</p>
+            <p style="margin:0;color:rgba(245,244,237,0.85);font-size:14px">{{ t.hood2 }}</p>
+          </div>
+        </div>
+
+        <!-- ===== 6 RECOMMENDATIONS ===== -->
+        <div dir="{{ dir }}" style="flex:0 0 100%;height:100%;scroll-snap-align:start;overflow-y:auto;background:#F5F4ED">
+          <div style="padding:76px 20px 40px;{{ fx6 }}">
+            <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#FF6037;margin-bottom:10px">{{ t.recsEyebrow }}</div>
+            <h2 style="font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:700;letter-spacing:-0.02em;font-size:36px;line-height:1.02;margin:0 0 10px;color:#351E1C">{{ t.recsTitleA }} <em style="color:#FF6037;font-style:normal;font-weight:800">{{ t.recsTitleB }}</em></h2>
+            <p style="margin:0 0 24px;color:rgba(53,30,28,0.7);font-size:14px">{{ t.recsIntro }}</p>
+            <sc-for list="{{ cats }}" as="cat" hint-placeholder-count="6">
+              <div style="border-top:2px solid #351E1C;padding-top:14px;margin-bottom:26px">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px">
+                  <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;font-weight:500;color:#351E1C">{{ cat.title }}</span>
+                  <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#FF6037">{{ cat.no }}</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:16px">
+                  <sc-for list="{{ cat.recs }}" as="rec" hint-placeholder-count="2">
+                    <div style="display:flex;flex-direction:column;gap:6px">
+                      <span style="font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:600;font-size:21px;line-height:1.15;color:#351E1C">{{ rec.name }}</span>
+                      <sc-if value="{{ rec.area }}" hint-placeholder-val="{{ false }}">
+                        <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:rgba(53,30,28,0.5)">{{ rec.area }}</div>
+                      </sc-if>
+                      <div style="font-size:13.5px;color:rgba(53,30,28,0.8)">{{ rec.blurb }}</div>
+                      <sc-if value="{{ rec.map }}" hint-placeholder-val="{{ false }}">
+                        <a href="{{ rec.map }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;align-self:flex-start;margin-top:2px;padding:6px 12px;border:1px solid rgba(53,30,28,0.25);border-radius:999px;text-decoration:none;font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:#733635">{{ t.mapLabel }}</a>
+                      </sc-if>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- ===== 7 CHECK-OUT ===== -->
+        <div dir="{{ dir }}" style="flex:0 0 100%;height:100%;scroll-snap-align:start;overflow-y:auto;background:#F5F4ED">
+          <div style="padding:76px 20px 40px;{{ fx7 }}">
+            <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#FF6037;margin-bottom:10px">{{ t.byeEyebrow }}</div>
+            <h2 style="font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:700;letter-spacing:-0.02em;font-size:36px;line-height:1.02;margin:0 0 20px;color:#351E1C">{{ t.byeTitleA }} <em style="color:#FF6037;font-style:normal;font-weight:800">{{ byeTime }}</em></h2>
+            <div style="border-top:1px solid rgba(53,30,28,0.18)">
+              <sc-for list="{{ byeList }}" as="b" hint-placeholder-count="4">
+                <div style="display:flex;gap:16px;align-items:baseline;padding:14px 0;border-bottom:1px solid rgba(53,30,28,0.12)">
+                  <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#733635">{{ b.n }}</span>
+                  <span style="color:rgba(53,30,28,0.85);font-size:15px">{{ b.text }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <p style="margin:20px 0 0;font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:700;font-size:19px;color:#733635">{{ t.byeSign }}</p>
+            <sc-if value="{{ calLink }}" hint-placeholder-val="{{ false }}">
+              <a href="{{ calLink }}" target="_blank" rel="noopener" style="display:inline-block;margin-top:20px;border:1px solid #351E1C;color:#351E1C;text-decoration:none;font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:500;font-size:13px;padding:11px 20px;border-radius:999px">{{ t.byeCal }}</a>
+            </sc-if>
+          </div>
+        </div>
+
+        <!-- ===== 8 CONTACT (dark closer) ===== -->
+        <div dir="{{ dir }}" style="flex:0 0 100%;height:100%;scroll-snap-align:start;overflow-y:auto;background:#351E1C;color:#F5F4ED;position:relative">
+          <div style="padding:76px 20px 120px;text-align:center;{{ fx8 }}">
+            <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#A0C9CB;margin-bottom:16px">{{ t.hereEyebrow }}</div>
+            <h2 style="font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:700;letter-spacing:-0.02em;font-size:48px;line-height:0.98;margin:0 0 16px">{{ t.hereTitleA }} <em style="color:#FF6037;font-style:normal;font-weight:800">{{ t.hereTitleB }}</em></h2>
+            <p style="margin:0 auto 24px;color:rgba(245,244,237,0.8);font-size:14.5px;max-width:280px">{{ t.hereBody }}</p>
+            <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#A0C9CB;margin-bottom:24px">{{ t.hereHours }}</div>
+
+            <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:36px">
+              <a href="{{ callLink }}" style="display:inline-flex;align-items:center;gap:6px;background:rgba(245,244,237,0.1);border:1px solid rgba(245,244,237,0.25);color:#F5F4ED;text-decoration:none;font-size:12.5px;padding:9px 14px;border-radius:999px" style-active="transform:scale(0.95)">{{ t.callUs }}</a>
+              <a href="{{ reportLink }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:rgba(245,244,237,0.1);border:1px solid rgba(245,244,237,0.25);color:#F5F4ED;text-decoration:none;font-size:12.5px;padding:9px 14px;border-radius:999px" style-active="transform:scale(0.95)">{{ t.reportIssue }}</a>
+              <button onClick="{{ shareGuide }}" style="display:inline-flex;align-items:center;gap:6px;background:rgba(245,244,237,0.1);border:1px solid rgba(245,244,237,0.25);color:#F5F4ED;font-size:12.5px;padding:9px 14px;border-radius:999px;cursor:pointer" style-active="transform:scale(0.95)">
+                <sc-if value="{{ justShared }}" hint-placeholder-val="{{ false }}"><span style="animation:jood-copy-pop 0.4s ease">✓ </span></sc-if>{{ t.shareGuide }}
+              </button>
+            </div>
+
+            <sc-if value="{{ showEmergency }}" hint-placeholder-val="{{ true }}">
+              <div style="border-top:1px solid rgba(160,201,203,0.25);padding-top:28px;display:grid;grid-template-columns:1fr 1fr;gap:20px;text-align:center">
+                <sc-for list="{{ emergency }}" as="em" hint-placeholder-count="4">
+                  <a href="{{ em.tel }}" style="text-decoration:none;display:flex;flex-direction:column;gap:4px">
+                    <span style="font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:600;font-size:24px;color:#F5F4ED">{{ em.num }}</span>
+                    <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#A0C9CB">{{ em.label }}</span>
+                  </a>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:calc(env(safe-area-inset-bottom,0px) + 28px)">
+            <a href="{{ waLink }}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(245,244,237,0.14);backdrop-filter:blur(16px) saturate(180%);-webkit-backdrop-filter:blur(16px) saturate(180%);border:1px solid rgba(245,244,237,0.35);color:#F5F4ED;text-decoration:none;font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:600;font-size:15px;padding:16px;border-radius:999px" style-active="transform:scale(0.96)">{{ t.hereCta }} →</a>
+          </div>
+        </div>
+
+      </div>
+
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultLang&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;en&quot;,&quot;ar&quot;],&quot;default&quot;:&quot;ar&quot;,&quot;tsType&quot;:&quot;'en'|'ar'&quot;,&quot;section&quot;:&quot;Guide&quot;},&quot;showEmergency&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Guide&quot;}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.DEFAULTS = {
+      unitName: 'Stone B-07',
+      floor: 'Building B · 3rd',
+      checkIn: '3:00 PM',
+      checkOut: '12:00 PM',
+      checkoutDate: '',
+      wifiSsid: 'JOOD_B07',
+      wifiPass: 'ahlan-2026',
+      doorCode: '4821#',
+      whatsapp: '+20 100 123 4567',
+      security: '+20 100 000 0000'
+    };
+    const unit = (typeof window !== 'undefined' && window.__UNIT_DATA__) || null;
+    this.storageKey = 'jood-guide-mobile:' + (unit ? 'unit:' + (unit.unitName || 'x') : 'master');
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(this.storageKey) || '{}'); } catch (e) {}
+    this.state = {
+      d: Object.assign({}, this.DEFAULTS, unit || {}, saved),
+      lang: this.props.defaultLang ?? 'ar',
+      copied: '',
+      justCopied: '',
+      openTip: -1,
+      active: 0,
+      checkedSteps: {},
+      showSwipeHint: true,
+      justShared: false
+    };
+    this.screenMeta = [
+      { dark: true }, { dark: true }, { dark: false }, { dark: false }, { dark: false },
+      { dark: true }, { dark: false }, { dark: false }, { dark: true }
+    ];
+  }
+
+  copy(key, value) {
+    try { navigator.clipboard.writeText(value); } catch (e) {}
+    this.setState({ copied: key, justCopied: key });
+    clearTimeout(this._ct);
+    clearTimeout(this._ctFlash);
+    this._ct = setTimeout(() => this.setState({ copied: '' }), 1800);
+    this._ctFlash = setTimeout(() => this.setState({ justCopied: '' }), 500);
+  }
+
+  mapUrl(q) {
+    return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
+  }
+
+  setPagerNode(el) {
+    if (!el) return;
+    this._pagerNode = el;
+  }
+
+  onPagerScroll(e) {
+    const el = e.target;
+    const idx = Math.round(el.scrollLeft / el.clientWidth);
+    if (idx !== this.state.active) this.setState({ active: idx, showSwipeHint: false });
+  }
+
+  toggleStep(i) {
+    this.setState(s => ({ checkedSteps: Object.assign({}, s.checkedSteps, { [i]: !s.checkedSteps[i] }) }));
+  }
+
+  shareGuide() {
+    const url = (typeof location !== 'undefined' && location.href) || '';
+    const title = 'JOOD Guest Guide';
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      navigator.share({ title, url }).catch(() => {});
+    } else {
+      try { navigator.clipboard.writeText(url); } catch (e) {}
+      this.setState({ justShared: true });
+      clearTimeout(this._shareT);
+      this._shareT = setTimeout(() => this.setState({ justShared: false }), 1500);
+    }
+  }
+
+  goTo(i) {
+    const n = this.screenMeta.length;
+    i = Math.max(0, Math.min(n - 1, i));
+    if (this._pagerNode) this._pagerNode.scrollTo({ left: i * this._pagerNode.clientWidth, behavior: 'smooth' });
+    this.setState({ active: i });
+  }
+
+  fx(i) {
+    const dist = i - this.state.active;
+    const ad = Math.abs(dist);
+    const opacity = ad === 0 ? 1 : ad === 1 ? 0.4 : 0.15;
+    const ty = ad === 0 ? 0 : 14;
+    const scale = ad === 0 ? 1 : 0.97;
+    return 'opacity:' + opacity + ';transform:translateY(' + ty + 'px) scale(' + scale + ');transition:opacity 0.55s cubic-bezier(.16,1,.3,1), transform 0.55s cubic-bezier(.16,1,.3,1)';
+  }
+
+  dict(lang) {
+    const en = {
+      metaA2: 'Stone Residence · New Cairo',
+      heroA: 'Ahlan wa', heroB: 'sahlan.',
+      heroSub: 'This apartment is run like a boutique hotel. Everything for the next few days is here: the codes, the coffee, and one number that always answers.',
+      heroCta: 'Message us on WhatsApp',
+      heroPlaceholder: 'photo placeholder · unit hero shot',
+      unitEyebrow: '01 — Essentials',
+      unitTitleA: 'Codes &', unitTitleB: 'connections.',
+      lblUnit: 'Unit', lblFloor: 'Floor', lblCheckIn: 'Check-in', lblCheckOut: 'Check-out',
+      lblWifi: 'WiFi network', lblPass: 'Password', lblDoor: 'Door code',
+      tapCopy: 'tap to copy', copied: 'copied ✓',
+      qrCaption: 'Scan with your camera to connect',
+      checklistEyebrow: '02 — Day one',
+      checklistTitleA: 'Your first', checklistTitleB: 'hour.',
+      checklist: [
+        'The door code opposite gets you in — press # after the digits.',
+        'AC remotes are on the coffee table; every room has its own unit.',
+        'Two bottles of water in the fridge are on us. Tap for cooking, bottled for drinking.',
+        'Scan the QR code and you\u2019re online in seconds.',
+        'Compound wristbands are in the drawer by the front door — you\u2019ll need them for the pool.'
+      ],
+      rulesEyebrow: '03 — House notes',
+      rulesTitleA: 'Four small', rulesTitleB: 'asks.',
+      rulesIntro: 'Nothing dramatic — just what keeps the place lovely for the guest after you.',
+      rules: [
+        'Smoking happens on the balcony, not indoors.',
+        'The compound asks for quiet after 11pm — sound carries here.',
+        'Gatherings are welcome; parties aren\u2019t. If your plans grow, tell us first.',
+        'Treat it like your own place — because for now, it is.'
+      ],
+      tipsEyebrow: '04 — Good to know',
+      tipsTitleA: 'How things', tipsTitleB: 'work.',
+      tips: [
+        { q: 'Air conditioning', a: 'Each room has its own split unit. 23–24°C is the sweet spot. Please switch them off when you head out.' },
+        { q: 'Water heater', a: 'Already on. The bathroom switch with the red light controls it — leave it on for hot water within minutes.' },
+        { q: 'Washing machine', a: 'In the kitchen. Detergent under the sink; program 3 (30°C, one hour) handles almost everything.' },
+        { q: 'TV & streaming', a: 'Signed into Netflix and YouTube on our house profile. Log into your own accounts freely — just log out before you leave.' }
+      ],
+      hoodEyebrow: '05 — Out the door',
+      hoodPlaceholder: 'photo placeholder · neighbourhood',
+      hoodTitleA: 'The', hoodTitleB: 'neighbourhood.',
+      hood1: 'Stone Residence sits in the quiet heart of the Fifth Settlement. Almost everything you\u2019ll need is within ten minutes: Point 90 Mall, 90th Street, and a small army of cafés.',
+      hood2: 'For an evening out, Downtown Katameya is the local favourite. Cairo Festival City is fifteen minutes for shopping, and the real Cairo — Nile, Khan el-Khalili, pyramids — is forty minutes by car.',
+      recsEyebrow: '06 — The black book',
+      recsTitleA: 'Where we\u2019d send', recsTitleB: 'a friend.',
+      recsIntro: 'Not sponsored, not comprehensive — just the places we actually go.',
+      mapLabel: 'map',
+      cats: [
+        { no: '№ 01', title: 'Coffee', recs: [
+          { name: 'Espresso Lab', area: 'Point 90 Mall · 10 min', blurb: 'Serious specialty coffee. Get the Spanish latte.', map: this.mapUrl('Espresso Lab Point 90 Mall New Cairo') },
+          { name: '30 North', area: 'Downtown Katameya · 12 min', blurb: 'Egypt\u2019s homegrown chain, better than the imports.', map: this.mapUrl('30 North Downtown Katameya New Cairo') }
+        ]},
+        { no: '№ 02', title: 'Eat', recs: [
+          { name: 'Ovio', area: 'Point 90 Mall · 10 min', blurb: 'Breakfast is the move — sunny terrace, excellent eggs.', map: this.mapUrl('Ovio Point 90 New Cairo') },
+          { name: 'Zooba', area: 'Cairo Festival City · 15 min', blurb: 'Egyptian street food, done beautifully.', map: this.mapUrl('Zooba Cairo Festival City') }
+        ]},
+        { no: '№ 03', title: 'Groceries', recs: [
+          { name: 'Seoudi Market', area: '90th Street · 5 min', blurb: 'Proper full supermarket. They deliver — message us for the number.', map: this.mapUrl('Seoudi Market 90th Street New Cairo') },
+          { name: 'Gourmet Egypt', area: 'Downtown Katameya · 12 min', blurb: 'For the fancy things: good cheese, fresh fish.', map: this.mapUrl('Gourmet Egypt Downtown Katameya') }
+        ]},
+        { no: '№ 04', title: 'Pharmacy', recs: [
+          { name: 'El Ezaby', area: '90th Street · 5 min', blurb: 'Open around the clock and they deliver. Hotline 19600.', map: this.mapUrl('El Ezaby Pharmacy 90th Street New Cairo') },
+          { name: 'Seif Pharmacy', area: 'Point 90 Mall · 10 min', blurb: 'Reliable chain. Hotline 19199.', map: this.mapUrl('Seif Pharmacy Point 90 New Cairo') }
+        ]},
+        { no: '№ 05', title: 'In the compound', recs: [
+          { name: 'Pool & gym', area: 'Stone Residence', blurb: 'Pool runs 8am–8pm — wristbands from the front-door drawer, towels in your wardrobe.', map: null },
+          { name: 'The grounds', area: '', blurb: 'The central lawn is lovely after sunset, kids\u2019 play area beside it.', map: null }
+        ]},
+        { no: '№ 06', title: 'Getting around', recs: [
+          { name: 'Uber & Careem', area: '', blurb: 'Both work well — set your pickup at Gate 2. Downtown is 30–45 min.', map: this.mapUrl('Stone Residence New Cairo Gate 2') },
+          { name: 'Renting a car', area: '', blurb: 'We can arrange a rental delivered to the compound — just message us.', map: null }
+        ]}
+      ],
+      byeEyebrow: '07 — Before you go',
+      byeTitleA: 'Check out by',
+      byeList: [
+        'Switch off the ACs and lights on your way out.',
+        'Leave wristbands and remotes on the dining table.',
+        'Pull the door closed behind you — it locks itself.',
+        'Send us a quick message when you head out.'
+      ],
+      byeCal: '＋ Add to calendar',
+      byeSign: 'Travel safe — and come back soon.',
+      hereEyebrow: '08 — Seven days a week',
+      hereTitleA: 'We\u2019re', hereTitleB: 'here.',
+      hereBody: 'A dripping AC, a restaurant booking, anything odd at 11pm — message us and a real person answers.',
+      hereCta: 'Message us on WhatsApp',
+      hereHours: '9am – 11pm · every day of your stay',
+      callUs: 'Call us',
+      reportIssue: 'Report an issue',
+      shareGuide: 'Share guide',
+      emLabels: { police: 'Police', ambulance: 'Ambulance', fire: 'Fire', security: 'Security' },
+      langBtn: 'عربي'
+    };
+    const ar = {
+      metaA2: 'ستون ريزيدنس · القاهرة الجديدة',
+      heroA: 'أهلاً', heroB: 'وسهلاً.',
+      heroSub: 'هذه الشقة تُدار كفندق بوتيك. كل ما تحتاجه للأيام القادمة هنا: الرموز، والقهوة، ورقم واحد يجيب دائماً.',
+      heroCta: 'راسلنا على واتساب',
+      heroPlaceholder: 'مكان الصورة · لقطة الوحدة الرئيسية',
+      unitEyebrow: '٠١ — الأساسيات',
+      unitTitleA: 'رموز', unitTitleB: 'واتصال.',
+      lblUnit: 'الوحدة', lblFloor: 'الطابق', lblCheckIn: 'الوصول', lblCheckOut: 'المغادرة',
+      lblWifi: 'شبكة الواي فاي', lblPass: 'كلمة المرور', lblDoor: 'رمز الباب',
+      tapCopy: 'اضغط للنسخ', copied: 'تم النسخ ✓',
+      qrCaption: 'امسح الرمز بالكاميرا للاتصال',
+      checklistEyebrow: '٠٢ — اليوم الأول',
+      checklistTitleA: 'ساعتك', checklistTitleB: 'الأولى.',
+      checklist: [
+        'رمز الباب المقابل يفتح لك — اضغط # بعد الأرقام.',
+        'أجهزة تحكم التكييف على طاولة القهوة، ولكل غرفة وحدتها.',
+        'زجاجتا مياه في الثلاجة هدية منا. ماء الصنبور للطبخ والمعبأ للشرب.',
+        'امسح رمز QR وستتصل بالإنترنت في ثوانٍ.',
+        'أساور الكمبوند في الدرج بجوار الباب — لحمام السباحة.'
+      ],
+      rulesEyebrow: '٠٣ — ملاحظات البيت',
+      rulesTitleA: 'أربعة طلبات', rulesTitleB: 'صغيرة.',
+      rulesIntro: 'لا شيء صارم — فقط ما يُبقي المكان جميلاً للضيف الذي يليك.',
+      rules: [
+        'التدخين في الشرفة، وليس داخل الشقة.',
+        'الكمبوند يطلب الهدوء بعد الحادية عشرة مساءً.',
+        'التجمعات أهلاً بها؛ الحفلات لا. إن كبرت خططك أخبرنا أولاً.',
+        'عامل المكان كأنه بيتك — لأنه الآن بيتك فعلاً.'
+      ],
+      tipsEyebrow: '٠٤ — يفيدك معرفته',
+      tipsTitleA: 'كيف تعمل', tipsTitleB: 'الأشياء.',
+      tips: [
+        { q: 'التكييف', a: 'لكل غرفة وحدة مستقلة. درجة ٢٣–٢٤ هي الأنسب. أطفئها عند الخروج.' },
+        { q: 'سخان الماء', a: 'مُشغَّل بالفعل. المفتاح ذو الضوء الأحمر في الحمام يتحكم فيه.' },
+        { q: 'الغسالة', a: 'في المطبخ. المسحوق تحت الحوض؛ البرنامج ٣ يناسب كل شيء تقريباً.' },
+        { q: 'التلفزيون', a: 'مسجّل على حساب البيت في نتفليكس ويوتيوب. سجّل الخروج قبل المغادرة.' }
+      ],
+      hoodEyebrow: '٠٥ — خارج الباب',
+      hoodPlaceholder: 'مكان الصورة · الحي',
+      hoodTitleA: 'الحيّ', hoodTitleB: 'من حولك.',
+      hood1: 'يقع ستون ريزيدنس في قلب التجمع الخامس الهادئ. كل ما تحتاجه في نطاق عشر دقائق: بوينت ٩٠ مول وشارع التسعين.',
+      hood2: 'لسهرة لطيفة، داون تاون القطامية هو المفضل محلياً. كايرو فستيفال سيتي على بُعد ربع ساعة، والقاهرة الحقيقية أربعون دقيقة بالسيارة.',
+      recsEyebrow: '٠٦ — دفترنا الصغير',
+      recsTitleA: 'أين نرسل', recsTitleB: 'أصدقاءنا.',
+      recsIntro: 'ليست إعلانات — فقط الأماكن التي نذهب إليها فعلاً.',
+      mapLabel: 'الخريطة',
+      cats: [
+        { no: '№ ٠١', title: 'قهوة', recs: [
+          { name: 'Espresso Lab', area: 'بوينت ٩٠ مول · ١٠ دقائق', blurb: 'قهوة مختصة بجدية. اطلب السبانيش لاتيه.', map: this.mapUrl('Espresso Lab Point 90 Mall New Cairo') },
+          { name: '30 North', area: 'داون تاون القطامية · ١٢ دقيقة', blurb: 'سلسلة مصرية أفضل من المستوردة.', map: this.mapUrl('30 North Downtown Katameya New Cairo') }
+        ]},
+        { no: '№ ٠٢', title: 'طعام', recs: [
+          { name: 'Ovio', area: 'بوينت ٩٠ مول · ١٠ دقائق', blurb: 'الفطور هو الأفضل هنا — تراس مشمس وبيض ممتاز.', map: this.mapUrl('Ovio Point 90 New Cairo') },
+          { name: 'Zooba', area: 'كايرو فستيفال سيتي · ١٥ دقيقة', blurb: 'أكل الشارع المصري بشكل جميل.', map: this.mapUrl('Zooba Cairo Festival City') }
+        ]},
+        { no: '№ ٠٣', title: 'بقالة', recs: [
+          { name: 'سعودي ماركت', area: 'شارع التسعين · ٥ دقائق', blurb: 'سوبر ماركت كامل. يوصّلون — راسلنا للرقم.', map: this.mapUrl('Seoudi Market 90th Street New Cairo') },
+          { name: 'جورميه إيجيبت', area: 'داون تاون القطامية · ١٢ دقيقة', blurb: 'للأشياء الفاخرة: جبن جيد وسمك طازج.', map: this.mapUrl('Gourmet Egypt Downtown Katameya') }
+        ]},
+        { no: '№ ٠٤', title: 'صيدلية', recs: [
+          { name: 'العزبي', area: 'شارع التسعين · ٥ دقائق', blurb: 'مفتوحة على مدار الساعة. الخط الساخن ١٩٦٠٠.', map: this.mapUrl('El Ezaby Pharmacy 90th Street New Cairo') },
+          { name: 'صيدليات سيف', area: 'بوينت ٩٠ مول · ١٠ دقائق', blurb: 'سلسلة موثوقة. الخط الساخن ١٩١٩٩.', map: this.mapUrl('Seif Pharmacy Point 90 New Cairo') }
+        ]},
+        { no: '№ ٠٥', title: 'داخل الكمبوند', recs: [
+          { name: 'المسبح والجيم', area: 'ستون ريزيدنس', blurb: 'المسبح من ٨ صباحاً حتى ٨ مساءً — الأساور في الدرج، والمناشف في الدولاب.', map: null },
+          { name: 'الحدائق', area: '', blurb: 'الحديقة المركزية رائعة بعد الغروب، وبجوارها منطقة ألعاب.', map: null }
+        ]},
+        { no: '№ ٠٦', title: 'التنقّل', recs: [
+          { name: 'أوبر وكريم', area: '', blurb: 'حدد نقطة الانطلاق عند البوابة ٢. وسط البلد ٣٠–٤٥ دقيقة.', map: this.mapUrl('Stone Residence New Cairo Gate 2') },
+          { name: 'استئجار سيارة', area: '', blurb: 'نرتب لك سيارة تصل إلى الكمبوند — فقط راسلنا.', map: null }
+        ]}
+      ],
+      byeEyebrow: '٠٧ — قبل الرحيل',
+      byeTitleA: 'المغادرة قبل',
+      byeList: [
+        'أطفئ المكيفات والأنوار في طريقك للخارج.',
+        'اترك الأساور وأجهزة التحكم على طاولة الطعام.',
+        'أغلق الباب خلفك — يقفل تلقائياً.',
+        'أرسل لنا رسالة سريعة عند انطلاقك.'
+      ],
+      byeCal: '＋ أضف إلى التقويم',
+      byeSign: 'رحلة آمنة — وعُد إلينا قريباً.',
+      hereEyebrow: '٠٨ — سبعة أيام في الأسبوع',
+      hereTitleA: 'نحن', hereTitleB: 'هنا.',
+      hereBody: 'تكييف يقطر، حجز مطعم، أو أي شيء غريب في الحادية عشرة مساءً — راسلنا وسيجيبك إنسان حقيقي.',
+      hereCta: 'راسلنا على واتساب',
+      hereHours: '٩ صباحاً – ١١ مساءً · كل أيام إقامتك',
+      callUs: 'اتصل بنا',
+      reportIssue: 'إبلاغ عن مشكلة',
+      shareGuide: 'مشاركة الدليل',
+      emLabels: { police: 'الشرطة', ambulance: 'الإسعاف', fire: 'المطافئ', security: 'الأمن' },
+      langBtn: 'English'
+    };
+    return lang === 'ar' ? ar : en;
+  }
+
+  renderVals() {
+    const { d, lang, copied, justCopied, openTip, active, checkedSteps, showSwipeHint, justShared } = this.state;
+    const t = this.dict(lang);
+    const digits = (d.whatsapp || '').replace(/[^\d]/g, '');
+    const qrData = 'WIFI:T:WPA;S:' + d.wifiSsid + ';P:' + d.wifiPass + ';;';
+    const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=6&color=F5F4ED&bgcolor=351E1C&data=' + encodeURIComponent(qrData);
+
+    let calLink = '';
+    if (d.checkoutDate && /^\d{4}-\d{2}-\d{2}$/.test(d.checkoutDate)) {
+      const s = d.checkoutDate.replace(/-/g, '');
+      const next = new Date(d.checkoutDate + 'T00:00:00');
+      next.setDate(next.getDate() + 1);
+      const e = next.toISOString().slice(0, 10).replace(/-/g, '');
+      calLink = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' +
+        encodeURIComponent('JOOD check-out — ' + d.unitName + ' (by ' + d.checkOut + ')') +
+        '&dates=' + s + '/' + e;
+    }
+
+    const tips = t.tips.map((tip, i) => ({
+      q: tip.q, a: tip.a,
+      open: i === openTip,
+      mark: i === openTip ? '−' : '+',
+      toggle: () => this.setState(s => ({ openTip: s.openTip === i ? -1 : i }))
+    }));
+
+    const emergency = [
+      { label: t.emLabels.police, num: '122', tel: 'tel:122' },
+      { label: t.emLabels.ambulance, num: '123', tel: 'tel:123' },
+      { label: t.emLabels.fire, num: '180', tel: 'tel:180' },
+      { label: t.emLabels.security, num: d.security, tel: 'tel:' + (d.security || '').replace(/[^\d+]/g, '') }
+    ];
+
+    const num = (i) => lang === 'ar' ? ['٠١','٠٢','٠٣','٠٤','٠٥','٠٦'][i] : String(i + 1).padStart(2, '0');
+    const trackDark = this.screenMeta[active].dark;
+    const dots = this.screenMeta.map((s, i) => ({
+      track: trackDark ? 'rgba(245,244,237,0.28)' : 'rgba(53,30,28,0.18)',
+      fill: i < active ? '100%' : i === active ? '100%' : '0%',
+      go: () => this.goTo(i)
+    }));
+    const total = this.screenMeta.length;
+    const counter = String(active + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+
+    return {
+      t, d, lang,
+      dir: lang === 'ar' ? 'rtl' : 'ltr',
+      topRowDir: 'row',
+      active,
+      logoBg: this.screenMeta[active].dark ? 'rgba(53,30,28,0.35)' : 'rgba(255,255,255,0.35)',
+      topRowTextColor: this.screenMeta[active].dark ? '#F5F4ED' : '#351E1C',
+      dots,
+      counter,
+      showPrev: active > 0,
+      showNext: active < this.screenMeta.length - 1,
+      goPrev: () => this.goTo(active - 1),
+      goNext: () => this.goTo(active + 1),
+      fx0: this.fx(0), fx1: this.fx(1), fx2: this.fx(2), fx3: this.fx(3), fx4: this.fx(4),
+      fx5: this.fx(5), fx6: this.fx(6), fx7: this.fx(7), fx8: this.fx(8),
+      pagerRef: (el) => this.setPagerNode(el),
+      onPagerScroll: (e) => this.onPagerScroll(e),
+      waLink: 'https://wa.me/' + digits,
+      qrImg: React.createElement('img', { src: qrUrl, alt: 'WiFi QR', width: 88, height: 88, style: { display: 'block', border: '1px solid rgba(160,201,203,0.35)', borderRadius: 8 } }),
+      calLink,
+      byeTime: d.checkOut + '.',
+      wifiCopyLabel: copied === 'wifi' ? t.copied : t.tapCopy,
+      codeCopyLabel: copied === 'code' ? t.copied : t.tapCopy,
+      wifiJustCopied: justCopied === 'wifi',
+      codeJustCopied: justCopied === 'code',
+      copyWifi: () => this.copy('wifi', d.wifiPass),
+      copyCode: () => this.copy('code', d.doorCode),
+      tips,
+      rules: t.rules.map((text, i) => ({ n: num(i), text })),
+      checklist: t.checklist.map((text, i) => {
+        const checked = !!checkedSteps[i];
+        return {
+          text, checked,
+          ringColor: checked ? '#FF6037' : 'rgba(53,30,28,0.3)',
+          fillColor: checked ? '#FF6037' : 'transparent',
+          textColor: checked ? 'rgba(53,30,28,0.4)' : 'rgba(53,30,28,0.85)',
+          strike: checked ? 'line-through' : 'none',
+          toggle: () => this.toggleStep(i)
+        };
+      }),
+      byeList: t.byeList.map((text, i) => ({ n: num(i), text })),
+      cats: t.cats,
+      emergency,
+      showEmergency: this.props.showEmergency ?? true,
+      callLink: 'tel:' + digits,
+      reportLink: 'https://wa.me/' + digits + '?text=' + encodeURIComponent('Hi, I have an issue with unit ' + d.unitName + ': '),
+      shareGuide: () => this.shareGuide(),
+      justShared,
+      swipeHintStyle: (showSwipeHint && active === 0) ? 'animation:jood-swipe-hint 1.4s ease-in-out infinite' : '',
+      toggleLang: () => this.setState(s => ({ lang: s.lang === 'ar' ? 'en' : 'ar' })),
+      langBtn: t.langBtn
+    };
+  }
+}
+</script>
+</body>
+</html>
