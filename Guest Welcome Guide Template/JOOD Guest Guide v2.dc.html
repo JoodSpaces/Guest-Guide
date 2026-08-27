@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160"><rect width="160" height="160" fill="#351E1C"/><text x="80" y="96" font-family="Georgia,serif" font-style="italic" font-size="54" fill="#FF6037" text-anchor="middle">J</text></svg></template>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Amiri:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<style>
+.jood-pin{display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 3px 10px rgba(53,30,28,0.35);border:2px solid #F5F4ED}
+.jood-pin span{transform:rotate(45deg);font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;font-weight:700}
+.leaflet-popup-content-wrapper{border-radius:12px;font-family:'Geist','IBM Plex Sans Arabic',sans-serif}
+.leaflet-popup-content{margin:12px 14px}
+html,body{margin:0;padding:0;background:#F5F4ED}
+*{box-sizing:border-box}
+a{color:inherit}
+input{font:inherit}
+::selection{background:#FF6037;color:#F5F4ED}
+@keyframes jood-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes jood-copy-pop{0%{transform:scale(0.6);opacity:0}55%{transform:scale(1.15);opacity:1}100%{transform:scale(1);opacity:1}}
+</style>
+</helmet>
+<div dir="{{ dir }}" style="min-height:100vh;background:#F5F4ED;color:#351E1C;font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-size:16px;line-height:1.65">
+
+  <!-- ============ SCROLL PROGRESS ============ -->
+  <div dir="ltr" style="position:fixed;top:0;left:0;right:0;height:3px;z-index:80;background:rgba(53,30,28,0.08)">
+    <div id="jood-progress-fill" style="height:100%;width:0%;background:#FF6037;transition:width 0.05s linear"></div>
+  </div>
+
+  <!-- ============ TOP BAR ============ -->
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px clamp(20px,5vw,48px);border-bottom:1px solid rgba(53,30,28,0.12)">
+    <img src="assets/jood-logo-liquid.gif" alt="JOOD" style="height:44px;width:auto;display:block">
+    <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(53,30,28,0.55)">{{ t.topRight }} · {{ d.unitName }}</div>
+  </div>
+
+  <!-- ============ SECTION INDEX ============ -->
+  <nav dir="ltr" style="position:sticky;top:0;z-index:40;background:#F5F4ED;border-bottom:1px solid rgba(53,30,28,0.12);overflow-x:auto;white-space:nowrap;padding:0 clamp(20px,5vw,48px);transition:box-shadow 0.3s ease">
+    <div style="display:inline-flex;gap:2px">
+      <sc-for list="{{ navItems }}" as="nv" hint-placeholder-count="9">
+        <a href="{{ nv.href }}" style="display:inline-flex;align-items:center;gap:7px;padding:13px 14px;text-decoration:none;font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.02em;color:{{ nv.color }};border-bottom:2px solid {{ nv.borderColor }};transition:color 0.25s ease,border-color 0.25s ease,transform 0.2s ease" style-hover="color:#351E1C;border-color:#FF6037;transform:translateY(-1px)">
+          <span style="display:inline-flex;color:{{ nv.iconColor }};transition:color 0.25s ease">{{ nv.icon }}</span>
+          <span>{{ nv.label }}</span>
+        </a>
+      </sc-for>
+    </div>
+  </nav>
+
+  <!-- ============ HERO ============ -->
+  <header data-screen-label="Hero" style="padding:clamp(40px,7vw,80px) clamp(20px,5vw,48px) 0;max-width:1100px;margin:0 auto">
+    <div style="display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(53,30,28,0.55);line-height:1.9">
+      <div style="display:flex;flex-direction:column">
+        <span>{{ t.metaA1 }}</span>
+        <span style="color:#351E1C">{{ t.metaA2 }}</span>
+      </div>
+      <div style="display:flex;flex-direction:column;text-align:end">
+        <span>{{ t.metaB1 }} — <span style="color:#351E1C">{{ d.unitName }}</span></span>
+        <span>{{ t.metaB2 }} — <span style="color:#351E1C">{{ d.checkIn }}</span></span>
+      </div>
+    </div>
+    <h1 style="font-family:'Instrument Serif','Amiri',serif;font-weight:400;font-size:clamp(58px,11vw,132px);line-height:1;letter-spacing:-0.015em;margin:clamp(32px,5vw,56px) 0 0">{{ t.heroA }} <em style="color:#FF6037">{{ t.heroB }}</em></h1>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:32px;align-items:end;margin:clamp(28px,4vw,44px) 0 clamp(36px,5vw,56px)">
+      <p style="margin:0;font-size:clamp(17px,2vw,19px);line-height:1.6;max-width:520px;color:rgba(53,30,28,0.85)">{{ t.heroSub }}</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end">
+        <a href="{{ waLink }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;background:#FF6037;color:#351E1C;text-decoration:none;font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:500;font-size:14px;padding:14px 24px;border-radius:999px" style-hover="background:#351E1C;color:#F5F4ED">{{ t.heroCta }} →</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- hero image -->
+  <div style="max-width:1100px;margin:0 auto;padding:0 clamp(20px,5vw,48px);overflow:hidden">
+    <div id="jood-hero-parallax" style="height:clamp(260px,42vw,440px);border:1px solid rgba(53,30,28,0.14);transform:scale(1.06);transition:transform 0.1s linear;will-change:transform">
+      <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="jood-hero-photo" shape="rect" src="{{ d.heroUrl }}" placeholder="{{ t.heroPlaceholder }}" hint-size="100%,100%" style="width:100%;height:100%;display:block"></x-import>
+    </div>
+  </div>
+
+  <!-- marquee -->
+  <div dir="ltr" style="overflow:hidden;border-top:1px solid rgba(53,30,28,0.12);border-bottom:1px solid rgba(53,30,28,0.12);margin-top:clamp(36px,5vw,56px);padding:12px 0;white-space:nowrap">
+    <div style="display:inline-flex;gap:28px;align-items:center;animation:jood-marquee 30s linear infinite;font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(53,30,28,0.6)">
+      <span>New Cairo</span><span style="color:#FF6037">●</span><span>Fifth Settlement</span><span style="color:#FF6037">●</span><span>Stone Residence</span><span style="color:#FF6037">●</span><span>Point 90</span><span style="color:#FF6037">●</span><span>90th Street</span><span style="color:#FF6037">●</span><span>Downtown Katameya</span><span style="color:#FF6037">●</span><span>Cairo Festival City</span><span style="color:#FF6037">●</span><span>Garden City</span><span style="color:#FF6037">●</span>
+      <span>New Cairo</span><span style="color:#FF6037">●</span><span>Fifth Settlement</span><span style="color:#FF6037">●</span><span>Stone Residence</span><span style="color:#FF6037">●</span><span>Point 90</span><span style="color:#FF6037">●</span><span>90th Street</span><span style="color:#FF6037">●</span><span>Downtown Katameya</span><span style="color:#FF6037">●</span><span>Cairo Festival City</span><span style="color:#FF6037">●</span><span>Garden City</span><span style="color:#FF6037">●</span>
+    </div>
+  </div>
+
+  <!-- ============ 00 WELCOME ============ -->
+  <section id="s-welcome" data-screen-label="Welcome" style="max-width:1100px;margin:0 auto;padding:clamp(56px,8vw,96px) clamp(20px,5vw,48px)">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:40px">
+      <div>
+        <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#FF6037;margin-bottom:16px">{{ t.welcomeEyebrow }}</div>
+        <h2 style="font-family:'Instrument Serif','Amiri',serif;font-weight:400;font-size:clamp(38px,5.5vw,64px);line-height:1.05;letter-spacing:-0.01em;margin:0">{{ t.welcomeTitleA }} <em style="color:#FF6037">{{ t.welcomeTitleB }}</em></h2>
+      </div>
+      <div style="align-self:end">
+        <p style="margin:0 0 16px;color:rgba(53,30,28,0.85)">{{ t.welcome1 }}</p>
+        <p style="margin:0 0 20px;color:rgba(53,30,28,0.85)">{{ t.welcome2 }}</p>
+        <p style="margin:0;font-family:'Instrument Serif','Amiri',serif;font-style:italic;font-size:20px;color:#733635">{{ t.welcomeSign }}</p>
+      </div>
+    </div>
+  </section>
+
+  <div style="height:1px;background:rgba(53,30,28,0.12)"></div>
+
+  <!-- ============ 01 ESSENTIALS ============ -->
+  <section id="s-essentials" data-screen-label="Unit info" style="max-width:1100px;margin:0 auto;padding:clamp(56px,8vw,96px) clamp(20px,5vw,48px)">
+    <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#FF6037;margin-bottom:16px">{{ t.unitEyebrow }}</div>
+    <h2 style="font-family:'Instrument Serif','Amiri',serif;font-weight:400;font-size:clamp(38px,5.5vw,64px);line-height:1.05;margin:0 0 40px">{{ t.unitTitleA }} <em style="color:#FF6037">{{ t.unitTitleB }}</em></h2>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border-top:1px solid rgba(53,30,28,0.18)">
+      <div style="padding:22px 20px 22px 0;border-bottom:1px solid rgba(53,30,28,0.12)">
+        <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(53,30,28,0.5);margin-bottom:8px">{{ t.lblUnit }}</div>
+        <div style="font-family:'Instrument Serif','Amiri',serif;font-size:30px;line-height:1.1">{{ d.unitName }}</div>
+      </div>
+      <div style="padding:22px 20px 22px 0;border-bottom:1px solid rgba(53,30,28,0.12)">
+        <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(53,30,28,0.5);margin-bottom:8px">{{ t.lblFloor }}</div>
+        <div style="font-family:'Instrument Serif','Amiri',serif;font-size:30px;line-height:1.1">{{ d.floor }}</div>
+      </div>
+      <div style="padding:22px 20px 22px 0;border-bottom:1px solid rgba(53,30,28,0.12)">
+        <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(53,30,28,0.5);margin-bottom:8px">{{ t.lblCheckIn }}</div>
+        <div style="font-family:'Instrument Serif','Amiri',serif;font-size:30px;line-height:1.1">{{ d.checkIn }}</div>
+      </div>
+      <div style="padding:22px 0 22px 0;border-bottom:1px solid rgba(53,30,28,0.12)">
+        <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(53,30,28,0.5);margin-bottom:8px">{{ t.lblCheckOut }}</div>
+        <div style="font-family:'Instrument Serif','Amiri',serif;font-size:30px;line-height:1.1">{{ d.checkOut }}</div>
+      </div>
+    </div>
+
+    <!-- dark access panel -->
+    <div style="margin-top:36px;background:#351E1C;color:#F5F4ED;padding:clamp(28px,4vw,44px);display:flex;flex-wrap:wrap;gap:36px;align-items:center;justify-content:space-between">
+      <div style="flex:1;min-width:260px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:28px">
+        <div>
+          <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:#A0C9CB;margin-bottom:10px">{{ t.lblWifi }}</div>
+          <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:18px">{{ d.wifiSsid }}</div>
+        </div>
+        <div>
+          <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:#A0C9CB;margin-bottom:10px">{{ t.lblPass }}</div>
+          <button onClick="{{ copyWifi }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;background:none;border:none;padding:0;cursor:pointer;color:#F5F4ED;text-align:start">
+            <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:18px;border-bottom:1px dashed rgba(160,201,203,0.6);padding-bottom:2px">{{ d.wifiPass }}</span>
+            <span style="display:inline-flex;align-items:center;gap:5px;font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#FF6037">
+              <sc-if value="{{ wifiJustCopied }}" hint-placeholder-val="{{ false }}"><span style="display:inline-block;animation:jood-copy-pop 0.4s ease">✓</span></sc-if>
+              <span>{{ wifiCopyLabel }}</span>
+            </span>
+          </button>
+        </div>
+        <div>
+          <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:#A0C9CB;margin-bottom:10px">{{ t.lblDoor }}</div>
+          <button onClick="{{ copyCode }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;background:none;border:none;padding:0;cursor:pointer;color:#F5F4ED;text-align:start">
+            <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:18px;border-bottom:1px dashed rgba(160,201,203,0.6);padding-bottom:2px">{{ d.doorCode }}</span>
+            <span style="display:inline-flex;align-items:center;gap:5px;font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#FF6037">
+              <sc-if value="{{ codeJustCopied }}" hint-placeholder-val="{{ false }}"><span style="display:inline-block;animation:jood-copy-pop 0.4s ease">✓</span></sc-if>
+              <span>{{ codeCopyLabel }}</span>
+            </span>
+          </button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px">
+        <sc-if value="{{ qrImg }}" hint-placeholder-val="{{ false }}">{{ qrImg }}</sc-if>
+        <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:#A0C9CB;max-width:120px;line-height:1.7">{{ t.qrCaption }}</div>
+      </div>
+    </div>
+  </section>
+
+  <div style="height:1px;background:rgba(53,30,28,0.12)"></div>
+
+  <!-- ============ 02 FIRST HOUR ============ -->
+  <section id="s-checklist" data-screen-label="Arrival checklist" style="max-width:1100px;margin:0 auto;padding:clamp(56px,8vw,96px) clamp(20px,5vw,48px)">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:40px">
+      <div>
+        <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#FF6037;margin-bottom:16px">{{ t.checklistEyebrow }}</div>
+        <h2 style="font-family:'Instrument Serif','Amiri',serif;font-weight:400;font-size:clamp(38px,5.5vw,64px);line-height:1.05;margin:0">{{ t.checklistTitleA }}<br><em style="color:#FF6037">{{ t.checklistTitleB }}</em></h2>
+      </div>
+      <div style="border-top:1px solid rgba(53,30,28,0.18)">
+        <sc-for list="{{ checklist }}" as="c" hint-placeholder-count="5">
+          <div style="display:flex;gap:24px;align-items:baseline;padding:18px 0;border-bottom:1px solid rgba(53,30,28,0.12)">
+            <span style="font-family:'Instrument Serif','Amiri',serif;font-style:italic;font-size:26px;color:#FF6037;min-width:36px">{{ c.n }}</span>
+            <span style="color:rgba(53,30,28,0.85)">{{ c.text }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <div style="height:1px;background:rgba(53,30,28,0.12)"></div>
+
+  <!-- ============ 03 HOUSE NOTES ============ -->
+  <section id="s-rules" data-screen-label="House rules" style="max-width:1100px;margin:0 auto;padding:clamp(56px,8vw,96px) clamp(20px,5vw,48px)">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:40px">
+      <div>
+        <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#FF6037;margin-bottom:16px">{{ t.rulesEyebrow }}</div>
+        <h2 style="font-family:'Instrument Serif','Amiri',serif;font-weight:400;font-size:clamp(38px,5.5vw,64px);line-height:1.05;margin:0 0 18px">{{ t.rulesTitleA }} <em style="color:#FF6037">{{ t.rulesTitleB }}</em></h2>
+        <p style="margin:0;max-width:380px;color:rgba(53,30,28,0.7)">{{ t.rulesIntro }}</p>
+      </div>
+      <div style="align-self:end;display:flex;flex-direction:column;gap:0;border-top:1px solid rgba(53,30,28,0.18)">
+        <sc-for list="{{ rules }}" as="r" hint-placeholder-count="4">
+          <div style="display:flex;gap:18px;align-items:baseline;padding:16px 0;border-bottom:1px solid rgba(53,30,28,0.12)">
+            <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#733635">{{ r.n }}</span>
+            <span style="color:rgba(53,30,28,0.85)">{{ r.text }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <div style="height:1px;background:rgba(53,30,28,0.12)"></div>
+
+  <!-- ============ 04 APARTMENT ============ -->
+  <section id="s-tips" data-screen-label="Appliance tips" style="max-width:1100px;margin:0 auto;padding:clamp(56px,8vw,96px) clamp(20px,5vw,48px)">
+    <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#FF6037;margin-bottom:16px">{{ t.tipsEyebrow }}</div>
+    <h2 style="font-family:'Instrument Serif','Amiri',serif;font-weight:400;font-size:clamp(38px,5.5vw,64px);line-height:1.05;margin:0 0 36px">{{ t.tipsTitleA }} <em style="color:#FF6037">{{ t.tipsTitleB }}</em></h2>
+    <div style="border-top:1px solid rgba(53,30,28,0.18);max-width:760px">
+      <sc-for list="{{ tips }}" as="tip" hint-placeholder-count="4">
+        <div style="border-bottom:1px solid rgba(53,30,28,0.18)">
+          <button onClick="{{ tip.toggle }}" style="width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;background:none;border:none;padding:20px 0;cursor:pointer;text-align:start;color:#351E1C">
+            <span style="font-family:'Instrument Serif','Amiri',serif;font-size:26px">{{ tip.q }}</span>
+            <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:20px;color:#FF6037">{{ tip.mark }}</span>
+          </button>
+          <sc-if value="{{ tip.open }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0;padding:0 0 22px;max-width:620px;color:rgba(53,30,28,0.8)">{{ tip.a }}</p>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <div style="height:1px;background:rgba(53,30,28,0.12)"></div>
+
+  <!-- ============ 05 NEIGHBOURHOOD ============ -->
+  <section id="s-hood" data-screen-label="Neighbourhood" style="max-width:1100px;margin:0 auto;padding:clamp(56px,8vw,96px) clamp(20px,5vw,48px)">
+    <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#FF6037;margin-bottom:16px">{{ t.hoodEyebrow }}</div>
+    <h2 style="font-family:'Instrument Serif','Amiri',serif;font-weight:400;font-size:clamp(38px,5.5vw,64px);line-height:1.05;margin:0 0 28px">{{ t.hoodTitleA }} <em style="color:#FF6037">{{ t.hoodTitleB }}</em></h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:32px;max-width:920px">
+      <p style="margin:0;color:rgba(53,30,28,0.85)">{{ t.hood1 }}</p>
+      <p style="margin:0;color:rgba(53,30,28,0.85)">{{ t.hood2 }}</p>
+    </div>
+  </section>
+
+  <div style="height:1px;background:rgba(53,30,28,0.12)"></div>
+
+  <!-- ============ 06 BLACK BOOK ============ -->
+  <section id="s-recs" data-screen-label="Recommendations" style="max-width:1100px;margin:0 auto;padding:clamp(56px,8vw,96px) clamp(20px,5vw,48px)">
+    <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#FF6037;margin-bottom:16px">{{ t.recsEyebrow }}</div>
+    <h2 style="font-family:'Instrument Serif','Amiri',serif;font-weight:400;font-size:clamp(38px,5.5vw,64px);line-height:1.05;margin:0 0 14px">{{ t.recsTitleA }} <em style="color:#FF6037">{{ t.recsTitleB }}</em></h2>
+    <p style="margin:0 0 32px;max-width:480px;color:rgba(53,30,28,0.7)">{{ t.recsIntro }}</p>
+
+    <!-- map -->
+    <div style="margin-bottom:36px;border-radius:16px;overflow:hidden;border:1px solid rgba(53,30,28,0.15)">
+      <div ref="{{ mapNodeRef }}" style="width:100%;height:340px;background:#e9e6db"></div>
+      <div dir="ltr" style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:rgba(53,30,28,0.04);font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(53,30,28,0.6)">
+        <span style="display:inline-flex;width:9px;height:9px;border-radius:50%;background:#733635"></span>{{ t.mapLegendHome }}
+        <span style="display:inline-flex;width:9px;height:9px;border-radius:50%;background:#FF6037;margin-left:14px"></span>{{ t.mapLegendRec }}
+        <span style="margin-left:14px;opacity:0.8">{{ t.mapLegendTap }}</span>
+      </div>
+    </div>
+
+    <!-- category jump chips -->
+    <div dir="ltr" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:36px">
+      <sc-for list="{{ cats }}" as="cchip" hint-placeholder-count="6">
+        <a href="{{ cchip.anchor }}" onClick="{{ cchip.onFly }}" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid rgba(53,30,28,0.2);border-radius:999px;text-decoration:none;font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#351E1C" style-hover="border-color:#FF6037;color:#FF6037">{{ cchip.title }}</a>
+      </sc-for>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:44px 32px">
+      <sc-for list="{{ cats }}" as="cat" hint-placeholder-count="6">
+        <div id="{{ cat.id }}" style="border-top:2px solid #351E1C;padding-top:18px;display:flex;flex-direction:column;gap:20px;scroll-margin-top:110px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+            <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#351E1C;font-weight:500">{{ cat.title }}</span>
+            <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#FF6037">{{ cat.no }}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:22px">
+            <sc-for list="{{ cat.recs }}" as="rec" hint-placeholder-count="2">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <span style="font-family:'Instrument Serif','Amiri',serif;font-size:25px;line-height:1.15">{{ rec.name }}</span>
+                <sc-if value="{{ rec.area }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.06em;color:rgba(53,30,28,0.5)">{{ rec.area }}</div>
+                </sc-if>
+                <div style="font-size:15px;color:rgba(53,30,28,0.8)">{{ rec.blurb }}</div>
+                <sc-if value="{{ rec.map }}" hint-placeholder-val="{{ false }}">
+                  <a href="{{ rec.map }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;align-self:flex-start;margin-top:2px;padding:7px 12px;border:1px solid rgba(53,30,28,0.25);border-radius:999px;text-decoration:none;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:#733635" style-hover="border-color:#FF6037;color:#FF6037">
+                    <span style="width:7px;height:7px;border-radius:50% 50% 50% 0;background:currentColor;transform:rotate(-45deg);display:inline-block"></span>
+                    {{ t.mapLabel }}
+                  </a>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <div style="height:1px;background:rgba(53,30,28,0.12)"></div>
+
+  <!-- ============ 07 CHECK-OUT ============ -->
+  <section id="s-checkout" data-screen-label="Check-out" style="max-width:1100px;margin:0 auto;padding:clamp(56px,8vw,96px) clamp(20px,5vw,48px)">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:40px">
+      <div>
+        <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#FF6037;margin-bottom:16px">{{ t.byeEyebrow }}</div>
+        <h2 style="font-family:'Instrument Serif','Amiri',serif;font-weight:400;font-size:clamp(38px,5.5vw,64px);line-height:1.05;margin:0 0 14px">{{ t.byeTitleA }}<br><em style="color:#FF6037">{{ byeTime }}</em></h2>
+        <sc-if value="{{ calLink }}" hint-placeholder-val="{{ false }}">
+          <a href="{{ calLink }}" target="_blank" rel="noopener" style="display:inline-block;margin-top:12px;border:1px solid #351E1C;color:#351E1C;text-decoration:none;font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:500;font-size:13.5px;padding:12px 22px;border-radius:999px" style-hover="background:#351E1C;color:#F5F4ED">{{ t.byeCal }}</a>
+        </sc-if>
+      </div>
+      <div style="align-self:end;border-top:1px solid rgba(53,30,28,0.18)">
+        <sc-for list="{{ byeList }}" as="b" hint-placeholder-count="4">
+          <div style="display:flex;gap:18px;align-items:baseline;padding:16px 0;border-bottom:1px solid rgba(53,30,28,0.12)">
+            <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#733635">{{ b.n }}</span>
+            <span style="color:rgba(53,30,28,0.85)">{{ b.text }}</span>
+          </div>
+        </sc-for>
+        <p style="margin:20px 0 0;font-family:'Instrument Serif','Amiri',serif;font-style:italic;font-size:22px;color:#733635">{{ t.byeSign }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DARK CLOSER ============ -->
+  <section id="s-contact" data-screen-label="Contact" style="background:#351E1C;color:#F5F4ED;padding:clamp(64px,9vw,110px) clamp(20px,5vw,48px)">
+    <div style="max-width:1100px;margin:0 auto;text-align:center">
+      <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#A0C9CB;margin-bottom:20px">{{ t.hereEyebrow }}</div>
+      <h2 style="font-family:'Instrument Serif','Amiri',serif;font-weight:400;font-size:clamp(48px,8vw,96px);line-height:1.02;margin:0 0 22px">{{ t.hereTitleA }} <em style="color:#FF6037">{{ t.hereTitleB }}</em></h2>
+      <p style="margin:0 auto 32px;max-width:480px;color:rgba(245,244,237,0.8)">{{ t.hereBody }}</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a href="{{ waLink }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;background:#FF6037;color:#351E1C;text-decoration:none;font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-weight:500;font-size:15px;padding:15px 28px;border-radius:999px" style-hover="background:#F5F4ED">{{ t.hereCta }} →</a>
+      </div>
+      <div style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px;letter-spacing:0.12em;text-transform:uppercase;color:#A0C9CB;margin-top:18px">{{ t.hereHours }}</div>
+
+      <sc-if value="{{ showEmergency }}" hint-placeholder-val="{{ true }}">
+        <div style="margin-top:clamp(48px,7vw,72px);border-top:1px solid rgba(160,201,203,0.25);padding-top:36px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:24px;text-align:center">
+          <sc-for list="{{ emergency }}" as="em" hint-placeholder-count="4">
+            <a href="{{ em.tel }}" style="text-decoration:none;display:flex;flex-direction:column;gap:6px">
+              <span style="font-family:'Instrument Serif','Amiri',serif;font-size:30px;color:#F5F4ED">{{ em.num }}</span>
+              <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:#A0C9CB">{{ em.label }}</span>
+            </a>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+  </section>
+
+  <!-- footer -->
+  <footer style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:20px clamp(20px,5vw,48px);border-top:1px solid rgba(53,30,28,0.12);font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(53,30,28,0.5)">
+    <img src="assets/jood-logo-liquid.gif" alt="JOOD" style="height:32px;width:auto;display:block">
+    <span style="display:flex;gap:14px;flex-wrap:wrap">
+      <span>{{ t.footer }}</span>
+      <sc-if value="{{ updatedLabel }}" hint-placeholder-val="{{ false }}"><span style="opacity:0.7">{{ updatedLabel }}</span></sc-if>
+    </span>
+  </footer>
+
+<!-- ============ LANGUAGE TOGGLE ============ -->
+<div dir="ltr" style="position:fixed;left:50%;bottom:20px;transform:translateX(-50%);display:flex;gap:8px;background:#351E1C;padding:8px;box-shadow:0 10px 30px rgba(53,30,28,0.35);z-index:70;border-radius:999px">
+  <button onClick="{{ toggleLang }}" style="background:none;border:1px solid rgba(160,201,203,0.5);color:#A0C9CB;font-family:'Geist','IBM Plex Sans Arabic',sans-serif;font-size:13px;padding:8px 16px;cursor:pointer;border-radius:999px" style-hover="border-color:#A0C9CB;color:#F5F4ED">{{ langBtn }}</button>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultLang&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;en&quot;,&quot;ar&quot;],&quot;default&quot;:&quot;ar&quot;,&quot;tsType&quot;:&quot;'en'|'ar'&quot;,&quot;section&quot;:&quot;Guide&quot;},&quot;showEmergency&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Guide&quot;}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.DEFAULTS = {
+      unitName: 'Stone B-07',
+      floor: 'Building B · 3rd',
+      checkIn: '3:00 PM',
+      checkOut: '12:00 PM',
+      checkoutDate: '',
+      wifiSsid: 'JOOD_B07',
+      wifiPass: 'ahlan-2026',
+      doorCode: '4821#',
+      whatsapp: '+20 100 123 4567',
+      security: '+20 100 000 0000',
+      heroUrl: ''
+    };
+    const unit = (typeof window !== 'undefined' && window.__UNIT_DATA__) || null;
+    this.storageKey = 'jood-guide:' + (unit ? 'unit:' + (unit.unitName || 'x') : 'master');
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(this.storageKey) || '{}'); } catch (e) {}
+    this.state = {
+      d: Object.assign({}, this.DEFAULTS, unit || {}, saved),
+      lang: this.props.defaultLang ?? 'en',
+      copied: '',
+      openTip: -1,
+      activeSection: 's-welcome'
+    };
+    this.sectionIds = ['s-welcome', 's-essentials', 's-checklist', 's-rules', 's-tips', 's-hood', 's-recs', 's-checkout', 's-contact'];
+  }
+
+  componentDidMount() {
+    this._navObserver = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) this.setState({ activeSection: e.target.id });
+      });
+    }, { root: null, rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+
+    this._revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.style.transition = 'opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1)';
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+          this._revealObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
+
+    this.sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      this._navObserver.observe(el);
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(28px)';
+      this._revealObserver.observe(el);
+    });
+
+    this._onScroll = () => {
+      const doc = document.documentElement;
+      const max = doc.scrollHeight - doc.clientHeight;
+      const pct = max > 0 ? Math.min(100, Math.max(0, (window.scrollY / max) * 100)) : 0;
+      const bar = document.getElementById('jood-progress-fill');
+      if (bar) bar.style.width = pct + '%';
+
+      const hero = document.getElementById('jood-hero-parallax');
+      if (hero) {
+        const scale = Math.max(1, 1.06 - window.scrollY * 0.00025);
+        hero.style.transform = 'scale(' + scale + ')';
+      }
+    };
+    window.addEventListener('scroll', this._onScroll, { passive: true });
+    this._onScroll();
+  }
+
+  componentWillUnmount() {
+    if (this._navObserver) this._navObserver.disconnect();
+    if (this._revealObserver) this._revealObserver.disconnect();
+    if (this._onScroll) window.removeEventListener('scroll', this._onScroll);
+  }
+
+  icon(name, color) {
+    const s = { display: 'block' };
+    const props = { width: 15, height: 15, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round', style: s };
+    const paths = {
+      welcome: [React.createElement('path', { key: 1, d: 'M4 12l8-8 8 8' }), React.createElement('path', { key: 2, d: 'M6 10v10h12V10' })],
+      essentials: [React.createElement('circle', { key: 1, cx: 8, cy: 8, r: 4 }), React.createElement('path', { key: 2, d: 'M11 11l9 9M17 17l3-3M14 14l3-3' })],
+      checklist: [React.createElement('path', { key: 1, d: 'M4 12l5 5L20 6' })],
+      rules: [React.createElement('path', { key: 1, d: 'M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z' })],
+      tips: [React.createElement('path', { key: 1, d: 'M9 18h6M10 21h4M12 3a6 6 0 0 0-3 11.2c.4.3.6.8.6 1.3v.5h4.8v-.5c0-.5.2-1 .6-1.3A6 6 0 0 0 12 3z' })],
+      hood: [React.createElement('path', { key: 1, d: 'M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21z' }), React.createElement('circle', { key: 2, cx: 12, cy: 9.5, r: 2.3 })],
+      recs: [React.createElement('path', { key: 1, d: 'M4 5.5C4 4.7 4.7 4 5.5 4H12v16H5.5A1.5 1.5 0 0 1 4 18.5v-13z' }), React.createElement('path', { key: 2, d: 'M20 5.5c0-.8-.7-1.5-1.5-1.5H12v16h6.5a1.5 1.5 0 0 0 1.5-1.5v-13z' })],
+      checkout: [React.createElement('path', { key: 1, d: 'M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3' }), React.createElement('path', { key: 2, d: 'M13 8l5 4-5 4M18 12H9' })],
+      contact: [React.createElement('path', { key: 1, d: 'M4 5h16v10H8l-4 4V5z' })]
+    };
+    return React.createElement('svg', props, paths[name] || []);
+  }
+
+  setData(patch) {
+    this.setState(s => {
+      const d = Object.assign({}, s.d, patch, { updatedAt: new Date().toISOString() });
+      try { localStorage.setItem(this.storageKey, JSON.stringify(d)); } catch (e) {}
+      return { d };
+    });
+  }
+
+  copy(key, value) {
+    try { navigator.clipboard.writeText(value); } catch (e) {}
+    this.setState({ copied: key, justCopied: key });
+    clearTimeout(this._ct);
+    clearTimeout(this._ctFlash);
+    this._ct = setTimeout(() => this.setState({ copied: '' }), 1800);
+    this._ctFlash = setTimeout(() => this.setState({ justCopied: '' }), 500);
+  }
+
+  mapUrl(q) {
+    return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
+  }
+
+  setMapNode(el) {
+    if (!el || this._mapNode === el) return;
+    this._mapNode = el;
+    this.initLeafletMap();
+  }
+
+  initLeafletMap() {
+    if (!this._mapNode || this._leafletMap) return;
+    if (typeof window === 'undefined' || !window.L) { setTimeout(() => this.initLeafletMap(), 150); return; }
+    const L = window.L;
+    this.HOME = [29.9793, 31.3858];
+    this.PLACES = {
+      point90: [30.0189, 31.4997],
+      katameya: [29.9660, 31.3800],
+      festivalcity: [30.0270, 31.4091],
+      street90: [30.0060, 31.4400]
+    };
+    const map = L.map(this._mapNode, { scrollWheelZoom: false, attributionControl: false }).setView(this.HOME, 12);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 18 }).addTo(map);
+    this._leafletMap = map;
+    this._markersLayer = L.layerGroup().addTo(map);
+    this._routeLayer = L.layerGroup().addTo(map);
+    this._routeCache = {};
+    const homeIcon = L.divIcon({ className: '', html: '<div class="jood-pin" style="background:#733635"><span>★</span></div>', iconSize: [26, 26], iconAnchor: [13, 26], popupAnchor: [0, -22] });
+    L.marker(this.HOME, { icon: homeIcon }).addTo(map).bindPopup(this.state.lang === 'ar' ? 'ستون ريزيدنس' : 'Stone Residence');
+    this.refreshMap();
+  }
+
+  nameOffset(name) {
+    let h = 0;
+    for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+    const ang = (h % 360) * (Math.PI / 180);
+    const r = 0.003 + (h % 5) * 0.0005;
+    return [Math.cos(ang) * r, Math.sin(ang) * r];
+  }
+
+  refreshMap() {
+    if (!this._leafletMap || !this._markersLayer || !this._catsForMap) return;
+    const L = window.L;
+    this._markersLayer.clearLayers();
+    this._catBounds = {};
+    const onSiteOffsets = [[0.0006, 0.0006], [-0.0006, -0.0006], [0.0006, -0.0006], [-0.0006, 0.0006]];
+    let onSiteIdx = 0;
+    this._catsForMap.forEach((cat, catIndex) => {
+      const pts = [];
+      const badgeNo = String(catIndex + 1).padStart(2, '0');
+      (cat.recs || []).forEach((rec) => {
+        let coords = null;
+        if (rec.onSite) {
+          const off = onSiteOffsets[onSiteIdx % onSiteOffsets.length];
+          onSiteIdx++;
+          coords = [this.HOME[0] + off[0], this.HOME[1] + off[1]];
+        } else if (rec.place && this.PLACES[rec.place]) {
+          const base = this.PLACES[rec.place];
+          const off = this.nameOffset(rec.name);
+          coords = [base[0] + off[0], base[1] + off[1]];
+        }
+        if (!coords) return;
+        pts.push(coords);
+        const bg = rec.onSite ? '#A0C9CB' : '#FF6037';
+        const glyph = rec.onSite ? '•' : badgeNo;
+        const icon = L.divIcon({ className: '', html: '<div class="jood-pin" style="background:' + bg + '"><span>' + glyph + '</span></div>', iconSize: [26, 26], iconAnchor: [13, 26], popupAnchor: [0, -22] });
+        const marker = L.marker(coords, { icon }).addTo(this._markersLayer);
+        if (rec.onSite) {
+          const label = this.state.lang === 'ar' ? 'داخل ستون ريزيدنس' : 'On-site at Stone Residence';
+          marker.bindPopup('<strong>' + rec.name + '</strong><br><span style="font-size:12px;color:rgba(53,30,28,0.6)">' + label + '</span>');
+        } else {
+          const loadingLabel = this.state.lang === 'ar' ? 'جارٍ حساب وقت القيادة…' : 'calculating drive time…';
+          const popupHtml = '<strong>' + rec.name + '</strong>' + (rec.area ? '<br><span style="opacity:0.65;font-size:12px">' + rec.area + '</span>' : '') + '<br><span style="font-size:12px;color:rgba(53,30,28,0.55)">' + loadingLabel + '</span>' + (rec.map ? '<br><a href="' + rec.map + '" target="_blank" rel="noopener" style="font-size:12px;color:#733635">' + (this.state.lang === 'ar' ? 'الخريطة' : 'open in maps') + '</a>' : '');
+          marker.bindPopup(popupHtml);
+          marker.on('click', () => this.showRoute(rec, coords, marker));
+          marker.on('popupopen', () => this.showRoute(rec, coords, marker));
+        }
+      });
+      this._catBounds[cat.id] = pts.length ? L.latLngBounds(pts) : null;
+    });
+  }
+
+  flyToCat(catId) {
+    if (!this._leafletMap || !this._catBounds || !this._catBounds[catId]) return;
+    this._leafletMap.flyToBounds(this._catBounds[catId].pad(0.4), { duration: 0.6 });
+  }
+
+  showRoute(rec, coords, marker) {
+    const L = window.L;
+    const key = coords[0] + ',' + coords[1];
+    const draw = (routeCoords, minutes) => {
+      this._routeLayer.clearLayers();
+      L.polyline(routeCoords, { color: '#733635', weight: 3, opacity: 0.75, dashArray: '1 8', lineCap: 'round' }).addTo(this._routeLayer);
+      const label = this.state.lang === 'ar' ? ('~' + minutes + ' دقيقة بالسيارة من ستون ريزيدنس') : ('~' + minutes + ' min drive from Stone Residence');
+      marker.setPopupContent('<strong>' + rec.name + '</strong>' + (rec.area ? '<br><span style="opacity:0.65;font-size:12px">' + rec.area + '</span>' : '') + '<br><span style="font-size:12px;color:#733635">' + label + '</span>' + (rec.map ? '<br><a href="' + rec.map + '" target="_blank" rel="noopener" style="font-size:12px;color:#733635">' + (this.state.lang === 'ar' ? 'الخريطة' : 'open in maps') + '</a>' : ''));
+    };
+    const fail = () => {
+      const label = this.state.lang === 'ar' ? 'وقت القيادة غير متاح الآن' : 'drive time unavailable right now';
+      marker.setPopupContent('<strong>' + rec.name + '</strong>' + (rec.area ? '<br><span style="opacity:0.65;font-size:12px">' + rec.area + '</span>' : '') + '<br><span style="font-size:12px;color:rgba(53,30,28,0.55)">' + label + '</span>' + (rec.map ? '<br><a href="' + rec.map + '" target="_blank" rel="noopener" style="font-size:12px;color:#733635">' + (this.state.lang === 'ar' ? 'الخريطة' : 'open in maps') + '</a>' : ''));
+    };
+    if (this._routeCache[key]) { draw(this._routeCache[key].coords, this._routeCache[key].minutes); return; }
+    const url = 'https://router.project-osrm.org/route/v1/driving/' + this.HOME[1] + ',' + this.HOME[0] + ';' + coords[1] + ',' + coords[0] + '?overview=full&geometries=geojson';
+    fetch(url).then((r) => r.json()).then((data) => {
+      const route = data && data.routes && data.routes[0];
+      if (!route) { fail(); return; }
+      const routeCoords = route.geometry.coordinates.map((c) => [c[1], c[0]]);
+      const minutes = Math.max(1, Math.round(route.duration / 60));
+      this._routeCache[key] = { coords: routeCoords, minutes };
+      draw(routeCoords, minutes);
+    }).catch(() => fail());
+  }
+
+  dict(lang) {
+    const en = {
+      topRight: 'Guest Guide',
+      metaA1: 'Guest Guide · 2026',
+      metaA2: 'Stone Residence · New Cairo',
+      metaB1: 'Unit', metaB2: 'Check-in from',
+      heroA: 'Ahlan wa', heroB: 'sahlan.',
+      heroSub: 'This apartment is run like a boutique hotel — because that\u2019s what JOOD does. Everything you need for the next few days is on this page: the codes, the coffee, and one number that always answers.',
+      heroCta: 'Message us on WhatsApp',
+      heroPlaceholder: 'Photography placeholder · your unit\u2019s hero shot',
+      welcomeEyebrow: '00 — A note from us',
+      welcomeTitleA: 'Welcome', welcomeTitleB: 'home.',
+      welcome1: 'We\u2019re glad you\u2019re here. This isn\u2019t a hotel floor or a franchise — it\u2019s one of our own units, set up the way we\u2019d want to land after a long trip: cool air, soft light, everything where you\u2019d expect it.',
+      welcome2: 'This guide covers the practical bits, plus a few places nearby we genuinely love. Anything else — we\u2019re one message away.',
+      welcomeSign: '— The JOOD team',
+      unitEyebrow: '01 — The essentials',
+      unitTitleA: 'Codes, times,', unitTitleB: 'connections.',
+      lblUnit: 'Unit', lblFloor: 'Floor', lblCheckIn: 'Check-in from', lblCheckOut: 'Check-out by',
+      lblWifi: 'WiFi network', lblPass: 'Password', lblDoor: 'Door code',
+      tapCopy: 'tap to copy', copied: 'copied ✓',
+      qrCaption: 'Scan with your camera to connect',
+      checklistEyebrow: '02 — Day one',
+      checklistTitleA: 'Your first', checklistTitleB: 'hour.',
+      checklist: [
+        'The door code opposite gets you in — press # after the digits.',
+        'AC remotes are on the coffee table; every room has its own unit.',
+        'Two bottles of water in the fridge are on us. Tap for cooking, bottled for drinking.',
+        'Scan the QR code and you\u2019re online in seconds.',
+        'Compound wristbands are in the drawer by the front door — you\u2019ll need them for the pool.'
+      ],
+      rulesEyebrow: '03 — House notes',
+      rulesTitleA: 'Four small', rulesTitleB: 'asks.',
+      rulesIntro: 'Nothing dramatic — just what keeps the place lovely for the guest after you.',
+      rules: [
+        'Smoking happens on the balcony, not indoors.',
+        'The compound asks for quiet after 11pm — sound carries here.',
+        'Gatherings are welcome; parties aren\u2019t. If your plans grow, tell us first.',
+        'Treat it like your own place — because for now, it is.'
+      ],
+      tipsEyebrow: '04 — Good to know',
+      tipsTitleA: 'How things', tipsTitleB: 'work.',
+      tips: [
+        { q: 'Air conditioning', a: 'Each room has its own split unit. 23–24°C is the sweet spot; below that they tend to drip. Please switch them off when you head out — New Cairo summers make them work hard.' },
+        { q: 'Water heater', a: 'Already on when you arrive. The bathroom switch with the red light controls it — leave it on and you\u2019ll always have hot water within minutes.' },
+        { q: 'Washing machine', a: 'In the kitchen. Detergent is under the sink; program 3 (30°C, one hour) handles almost everything. Drying rack is on the balcony.' },
+        { q: 'TV & streaming', a: 'Signed into Netflix and YouTube on our house profile. Log into your own accounts freely — just log out before you leave.' }
+      ],
+      hoodEyebrow: '05 — Out the door',
+      hoodTitleA: 'The', hoodTitleB: 'neighbourhood.',
+      hood1: 'Stone Residence sits in the quiet heart of the Fifth Settlement — leafy streets, wide pavements, none of downtown\u2019s noise. Almost everything you\u2019ll need day-to-day is within ten minutes: Point 90 Mall, the 90th Street strip, and a small army of cafés.',
+      hood2: 'For an evening out, Downtown Katameya is the local favourite — open-air, easy, full of restaurants. Cairo Festival City is fifteen minutes for serious shopping, and when you want the real Cairo — the Nile, Khan el-Khalili, the pyramids — count on forty minutes by car and go early.',
+      recsEyebrow: '06 — The black book',
+      recsTitleA: 'Where we\u2019d send', recsTitleB: 'a friend.',
+      recsIntro: 'Not sponsored, not comprehensive — just the places we actually go.',
+      mapLabel: 'map',
+      mapLegendHome: 'Stone Residence',
+      mapLegendRec: 'Recommendation',
+      mapLegendTap: '\u00b7 tap a pin for the drive time',
+      cats: [
+        { no: '№ 01', title: 'Coffee', recs: [
+          { name: 'Espresso Lab', area: 'Point 90 Mall · 10 min', blurb: 'Serious specialty coffee. Get the Spanish latte — everyone does, and everyone\u2019s right.', map: this.mapUrl('Espresso Lab Point 90 Mall New Cairo'), place: 'point90' },
+          { name: '30 North', area: 'Downtown Katameya · 12 min', blurb: 'Egypt\u2019s homegrown chain, better than the imports. Great iced drinks for hot afternoons.', map: this.mapUrl('30 North Downtown Katameya New Cairo'), place: 'katameya' }
+        ]},
+        { no: '№ 02', title: 'Eat', recs: [
+          { name: 'Ovio', area: 'Point 90 Mall · 10 min', blurb: 'Breakfast is the move — sunny terrace, proper bread, excellent eggs.', map: this.mapUrl('Ovio Point 90 New Cairo'), place: 'point90' },
+          { name: 'Zooba', area: 'Cairo Festival City · 15 min', blurb: 'Egyptian street food, done beautifully. Order the taameya and hawawshi, thank us later.', map: this.mapUrl('Zooba Cairo Festival City'), place: 'festivalcity' }
+        ]},
+        { no: '№ 03', title: 'Groceries', recs: [
+          { name: 'Seoudi Market', area: '90th Street · 5 min', blurb: 'Proper full supermarket, five minutes by car. They deliver — message us for the number.', map: this.mapUrl('Seoudi Market 90th Street New Cairo'), place: 'street90' },
+          { name: 'Gourmet Egypt', area: 'Downtown Katameya · 12 min', blurb: 'For the fancy things: good cheese, fresh fish, imported everything.', map: this.mapUrl('Gourmet Egypt Downtown Katameya'), place: 'katameya' }
+        ]},
+        { no: '№ 04', title: 'Pharmacy', recs: [
+          { name: 'El Ezaby', area: '90th Street · 5 min', blurb: 'Open around the clock and they deliver. Hotline 19600 — they speak English.', map: this.mapUrl('El Ezaby Pharmacy 90th Street New Cairo'), place: 'street90' },
+          { name: 'Seif Pharmacy', area: 'Point 90 Mall · 10 min', blurb: 'Reliable chain inside the mall. Hotline 19199 if you\u2019d rather not go out.', map: this.mapUrl('Seif Pharmacy Point 90 New Cairo'), place: 'point90' }
+        ]},
+        { no: '№ 05', title: 'In the compound', recs: [
+          { name: 'Pool & gym', area: 'Stone Residence', blurb: 'Pool runs 8am–8pm — wristbands from the front-door drawer get you in, towels are in your wardrobe. The gym is by the clubhouse; your door code works there too.', map: null, onSite: true },
+          { name: 'The grounds', area: '', blurb: 'The central lawn is lovely after sunset, with a kids\u2019 play area beside it. Evening walks around the loop are a resident ritual.', map: null, onSite: true }
+        ]},
+        { no: '№ 06', title: 'Getting around', recs: [
+          { name: 'Uber & Careem', area: '', blurb: 'Both work well here — set your pickup at Gate 2, it\u2019s the easiest for drivers to find. Downtown is 30–45 minutes depending on traffic.', map: this.mapUrl('Stone Residence New Cairo Gate 2') },
+          { name: 'Renting a car', area: '', blurb: 'If you\u2019d rather drive, we can arrange a rental delivered to the compound with a day\u2019s notice — just message us.', map: null, onSite: true }
+        ]}
+      ],
+      byeEyebrow: '07 — Before you go',
+      byeTitleA: 'Check out by', byeTimePrefix: '',
+      byeList: [
+        'Switch off the ACs and lights on your way out.',
+        'Leave wristbands and remotes on the dining table.',
+        'Pull the door closed behind you — it locks itself.',
+        'Send us a quick message when you head out, so we know you\u2019re safely away.'
+      ],
+      byeCal: '＋ Add check-out to my calendar',
+      byeSign: 'Travel safe — and come back soon.',
+      hereEyebrow: '08 — Seven days a week',
+      hereTitleA: 'We\u2019re', hereTitleB: 'here.',
+      hereBody: 'A dripping AC, a restaurant booking, directions, anything odd at 11pm — message us and a real person answers. That\u2019s the whole point of JOOD.',
+      hereCta: 'Message us on WhatsApp',
+      hereHours: '9am – 11pm · every day of your stay',
+      emergencyTitle: 'Emergency',
+      emLabels: { police: 'Police', ambulance: 'Ambulance', fire: 'Fire', security: 'Compound security' },
+      footer: 'Hospitality · Cairo, Egypt · 2026',
+      navWelcome: 'Welcome', navEssentials: 'Essentials', navChecklist: 'First hour', navRules: 'House notes',
+      navTips: 'Apartment', navHood: 'Neighbourhood', navRecs: 'Black book', navCheckout: 'Check-out', navContact: 'Contact',
+      updatedPrefix: 'Updated',
+      editBtn: 'Edit', editDone: 'Done', langBtn: 'عربي'
+    };
+
+    const ar = {
+      topRight: 'دليل الضيوف',
+      metaA1: 'دليل الضيوف · ٢٠٢٦',
+      metaA2: 'ستون ريزيدنس · القاهرة الجديدة',
+      metaB1: 'الوحدة', metaB2: 'الوصول من',
+      heroA: 'أهلاً', heroB: 'وسهلاً.',
+      heroSub: 'هذه الشقة تُدار كفندق بوتيك — لأن هذا ما تفعله جود. كل ما تحتاجه للأيام القادمة في هذه الصفحة: الرموز، والقهوة، ورقم واحد يجيب دائماً.',
+      heroCta: 'راسلنا على واتساب',
+      heroPlaceholder: 'مكان الصورة — لقطة وحدتك الرئيسية',
+      welcomeEyebrow: '٠٠ — رسالة منّا',
+      welcomeTitleA: 'أهلاً بك في', welcomeTitleB: 'بيتك.',
+      welcome1: 'سعداء بوجودك معنا. هذه ليست غرفة فندق ولا فرعاً من سلسلة — إنها واحدة من وحداتنا، جهّزناها كما نحب أن نصل نحن بعد رحلة طويلة: هواء بارد، إضاءة هادئة، وكل شيء في مكانه المتوقع.',
+      welcome2: 'هذا الدليل يغطي التفاصيل العملية، وبعض الأماكن القريبة التي نحبها فعلاً. ولأي شيء آخر — نحن على بُعد رسالة واحدة.',
+      welcomeSign: '— فريق جود',
+      unitEyebrow: '٠١ — الأساسيات',
+      unitTitleA: 'رموز، مواعيد،', unitTitleB: 'اتصال.',
+      lblUnit: 'الوحدة', lblFloor: 'الطابق', lblCheckIn: 'الوصول من', lblCheckOut: 'المغادرة قبل',
+      lblWifi: 'شبكة الواي فاي', lblPass: 'كلمة المرور', lblDoor: 'رمز الباب',
+      tapCopy: 'اضغط للنسخ', copied: 'تم النسخ ✓',
+      qrCaption: 'امسح الرمز بالكاميرا للاتصال',
+      checklistEyebrow: '٠٢ — اليوم الأول',
+      checklistTitleA: 'ساعتك', checklistTitleB: 'الأولى.',
+      checklist: [
+        'رمز الباب المقابل يفتح لك — اضغط # بعد الأرقام.',
+        'أجهزة التحكم في التكييف على طاولة القهوة، ولكل غرفة وحدتها الخاصة.',
+        'زجاجتا مياه في الثلاجة هدية منا. ماء الصنبور للطبخ، والمعبأ للشرب.',
+        'امسح رمز QR وستتصل بالإنترنت في ثوانٍ.',
+        'أساور دخول الكمبوند في الدرج بجوار الباب — ستحتاجها لحمام السباحة.'
+      ],
+      rulesEyebrow: '٠٣ — ملاحظات البيت',
+      rulesTitleA: 'أربعة طلبات', rulesTitleB: 'صغيرة.',
+      rulesIntro: 'لا شيء صارم — فقط ما يُبقي المكان جميلاً للضيف الذي يليك.',
+      rules: [
+        'التدخين في الشرفة، وليس داخل الشقة.',
+        'الكمبوند يطلب الهدوء بعد الحادية عشرة مساءً — الصوت يُسمع هنا.',
+        'التجمعات العائلية أهلاً بها؛ الحفلات لا. إن كبرت خططك، أخبرنا أولاً.',
+        'عامل المكان كأنه بيتك — لأنه، الآن، بيتك فعلاً.'
+      ],
+      tipsEyebrow: '٠٤ — يفيدك معرفته',
+      tipsTitleA: 'كيف تعمل', tipsTitleB: 'الأشياء.',
+      tips: [
+        { q: 'التكييف', a: 'لكل غرفة وحدة مستقلة. درجة ٢٣–٢٤ هي الأنسب؛ أقل من ذلك قد تقطر الوحدة. نرجو إطفاءها عند الخروج — صيف القاهرة الجديدة يجهدها.' },
+        { q: 'سخان الماء', a: 'مُشغَّل عند وصولك. المفتاح ذو الضوء الأحمر في الحمام يتحكم فيه — اتركه مفتوحاً وسيتوفر الماء الساخن دائماً خلال دقائق.' },
+        { q: 'الغسالة', a: 'في المطبخ. المسحوق تحت الحوض؛ البرنامج ٣ (٣٠ درجة، ساعة واحدة) يناسب كل شيء تقريباً. منشر الغسيل في الشرفة.' },
+        { q: 'التلفزيون والبث', a: 'مسجّل على حساب البيت في نتفليكس ويوتيوب. ادخل بحساباتك بحرية — فقط سجّل الخروج قبل المغادرة.' }
+      ],
+      hoodEyebrow: '٠٥ — خارج الباب',
+      hoodTitleA: 'الحيّ', hoodTitleB: 'من حولك.',
+      hood1: 'يقع ستون ريزيدنس في قلب التجمع الخامس الهادئ — شوارع مشجّرة وأرصفة واسعة وبعيداً عن ضجيج وسط البلد. كل ما تحتاجه يومياً في نطاق عشر دقائق: بوينت ٩٠ مول، وشارع التسعين، وعدد لا يُحصى من المقاهي.',
+      hood2: 'لسهرة لطيفة، داون تاون القطامية هو المفضل محلياً — مفتوح الهواء ومليء بالمطاعم. كايرو فستيفال سيتي على بُعد ربع ساعة للتسوق الجاد، وحين تشتاق للقاهرة الحقيقية — النيل وخان الخليلي والأهرامات — احسب أربعين دقيقة بالسيارة وانطلق مبكراً.',
+      recsEyebrow: '٠٦ — دفترنا الصغير',
+      recsTitleA: 'أين نرسل', recsTitleB: 'أصدقاءنا.',
+      recsIntro: 'ليست إعلانات وليست قائمة شاملة — فقط الأماكن التي نذهب إليها فعلاً.',
+      mapLabel: 'الخريطة',
+      mapLegendHome: 'ستون ريزيدنس',
+      mapLegendRec: 'توصية',
+      mapLegendTap: '· اضغط على العلامة لمعرفة وقت القيادة',
+      cats: [
+        { no: '№ ٠١', title: 'قهوة', recs: [
+          { name: 'Espresso Lab', area: 'بوينت ٩٠ مول · ١٠ دقائق', blurb: 'قهوة مختصة بجدية. اطلب السبانيش لاتيه — الجميع يفعل، والجميع على حق.', map: this.mapUrl('Espresso Lab Point 90 Mall New Cairo'), place: 'point90' },
+          { name: '30 North', area: 'داون تاون القطامية · ١٢ دقيقة', blurb: 'سلسلة مصرية أفضل من المستوردة. مشروبات مثلجة ممتازة لعصاري الصيف.', map: this.mapUrl('30 North Downtown Katameya New Cairo'), place: 'katameya' }
+        ]},
+        { no: '№ ٠٢', title: 'طعام', recs: [
+          { name: 'Ovio', area: 'بوينت ٩٠ مول · ١٠ دقائق', blurb: 'الفطور هو الأفضل هنا — تراس مشمس وخبز حقيقي وبيض ممتاز.', map: this.mapUrl('Ovio Point 90 New Cairo'), place: 'point90' },
+          { name: 'Zooba', area: 'كايرو فستيفال سيتي · ١٥ دقيقة', blurb: 'أكل الشارع المصري بشكل جميل. اطلب الطعمية والحواوشي واشكرنا لاحقاً.', map: this.mapUrl('Zooba Cairo Festival City'), place: 'festivalcity' }
+        ]},
+        { no: '№ ٠٣', title: 'بقالة', recs: [
+          { name: 'سعودي ماركت', area: 'شارع التسعين · ٥ دقائق', blurb: 'سوبر ماركت كامل على بُعد خمس دقائق بالسيارة. يوصّلون — راسلنا للرقم.', map: this.mapUrl('Seoudi Market 90th Street New Cairo'), place: 'street90' },
+          { name: 'جورميه إيجيبت', area: 'داون تاون القطامية · ١٢ دقيقة', blurb: 'للأشياء الفاخرة: جبن جيد وسمك طازج وكل شيء مستورد.', map: this.mapUrl('Gourmet Egypt Downtown Katameya'), place: 'katameya' }
+        ]},
+        { no: '№ ٠٤', title: 'صيدلية', recs: [
+          { name: 'العزبي', area: 'شارع التسعين · ٥ دقائق', blurb: 'مفتوحة على مدار الساعة وتوصّل للمنزل. الخط الساخن ١٩٦٠٠.', map: this.mapUrl('El Ezaby Pharmacy 90th Street New Cairo'), place: 'street90' },
+          { name: 'صيدليات سيف', area: 'بوينت ٩٠ مول · ١٠ دقائق', blurb: 'سلسلة موثوقة داخل المول. الخط الساخن ١٩١٩٩ إن لم ترغب في الخروج.', map: this.mapUrl('Seif Pharmacy Point 90 New Cairo'), place: 'point90' }
+        ]},
+        { no: '№ ٠٥', title: 'داخل الكمبوند', recs: [
+          { name: 'المسبح والجيم', area: 'ستون ريزيدنس', blurb: 'المسبح من ٨ صباحاً حتى ٨ مساءً — الأساور في درج الباب تدخلك، والمناشف في الدولاب. الجيم بجوار الكلوب هاوس ورمز بابك يعمل هناك أيضاً.', map: null, onSite: true },
+          { name: 'الحدائق', area: '', blurb: 'الحديقة المركزية رائعة بعد الغروب، وبجوارها منطقة ألعاب للأطفال. المشي مساءً حول الممر عادة السكان هنا.', map: null, onSite: true }
+        ]},
+        { no: '№ ٠٦', title: 'التنقّل', recs: [
+          { name: 'أوبر وكريم', area: '', blurb: 'كلاهما يعمل جيداً هنا — حدد نقطة الانطلاق عند البوابة ٢، فهي الأسهل للسائقين. وسط البلد بين ٣٠ و٤٥ دقيقة حسب الزحام.', map: this.mapUrl('Stone Residence New Cairo Gate 2') },
+          { name: 'استئجار سيارة', area: '', blurb: 'إن فضّلت القيادة، نرتب لك سيارة تصل إلى الكمبوند بإشعار يوم واحد — فقط راسلنا.', map: null, onSite: true }
+        ]}
+      ],
+      byeEyebrow: '٠٧ — قبل الرحيل',
+      byeTitleA: 'المغادرة قبل', byeTimePrefix: '',
+      byeList: [
+        'أطفئ المكيفات والأنوار في طريقك للخارج.',
+        'اترك الأساور وأجهزة التحكم على طاولة الطعام.',
+        'أغلق الباب خلفك — يقفل تلقائياً.',
+        'أرسل لنا رسالة سريعة عند انطلاقك، لنطمئن أنك بخير.'
+      ],
+      byeCal: '＋ أضف موعد المغادرة إلى تقويمي',
+      byeSign: 'رحلة آمنة — وعُد إلينا قريباً.',
+      hereEyebrow: '٠٨ — سبعة أيام في الأسبوع',
+      hereTitleA: 'نحن', hereTitleB: 'هنا.',
+      hereBody: 'تكييف يقطر، حجز مطعم، اتجاهات، أو أي شيء غريب في الحادية عشرة مساءً — راسلنا وسيجيبك إنسان حقيقي. هذه هي فكرة جود كلها.',
+      hereCta: 'راسلنا على واتساب',
+      hereHours: '٩ صباحاً – ١١ مساءً · كل أيام إقامتك',
+      emergencyTitle: 'الطوارئ',
+      emLabels: { police: 'الشرطة', ambulance: 'الإسعاف', fire: 'المطافئ', security: 'أمن الكمبوند' },
+      footer: 'ضيافة · القاهرة، مصر · ٢٠٢٦',
+      navWelcome: 'ترحيب', navEssentials: 'الأساسيات', navChecklist: 'الساعة الأولى', navRules: 'ملاحظات البيت',
+      navTips: 'الشقة', navHood: 'الحيّ', navRecs: 'الدفتر', navCheckout: 'المغادرة', navContact: 'تواصل',
+      updatedPrefix: 'آخر تحديث',
+      editBtn: 'تعديل', editDone: 'تم', langBtn: 'English'
+    };
+    return lang === 'ar' ? ar : en;
+  }
+
+  renderVals() {
+    const { d, lang, copied, openTip, justCopied } = this.state;
+    const t = this.dict(lang);
+    const digits = (d.whatsapp || '').replace(/[^\d]/g, '');
+    const qrData = 'WIFI:T:WPA;S:' + d.wifiSsid + ';P:' + d.wifiPass + ';;';
+    const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=6&color=F5F4ED&bgcolor=351E1C&data=' + encodeURIComponent(qrData);
+
+    let calLink = '';
+    if (d.checkoutDate && /^\d{4}-\d{2}-\d{2}$/.test(d.checkoutDate)) {
+      const s = d.checkoutDate.replace(/-/g, '');
+      const next = new Date(d.checkoutDate + 'T00:00:00');
+      next.setDate(next.getDate() + 1);
+      const e = next.toISOString().slice(0, 10).replace(/-/g, '');
+      calLink = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' +
+        encodeURIComponent('JOOD check-out — ' + d.unitName + ' (by ' + d.checkOut + ')') +
+        '&dates=' + s + '/' + e +
+        '&details=' + encodeURIComponent('Check-out by ' + d.checkOut + '. Leave wristbands and remotes on the dining table and message us on WhatsApp when you head out.');
+    }
+
+    const tips = t.tips.map((tip, i) => ({
+      q: tip.q, a: tip.a,
+      open: i === openTip,
+      mark: i === openTip ? '−' : '+',
+      toggle: () => this.setState(s => ({ openTip: s.openTip === i ? -1 : i }))
+    }));
+
+    const emergency = [
+      { label: t.emLabels.police, num: '122', tel: 'tel:122' },
+      { label: t.emLabels.ambulance, num: '123', tel: 'tel:123' },
+      { label: t.emLabels.fire, num: '180', tel: 'tel:180' },
+      { label: t.emLabels.security, num: d.security, tel: 'tel:' + (d.security || '').replace(/[^\d+]/g, '') }
+    ];
+
+    const num = (i) => lang === 'ar' ? ['٠١','٠٢','٠٣','٠٤','٠٥','٠٦'][i] : String(i + 1).padStart(2, '0');
+
+    const catIds = ['coffee', 'eat', 'groceries', 'pharmacy', 'compound', 'transport'];
+    const catsWithAnchors = t.cats.map((c, i) => Object.assign({}, c, { id: 'cat-' + catIds[i], anchor: '#cat-' + catIds[i], onFly: () => this.flyToCat('cat-' + catIds[i]) }));
+    this._catsForMap = catsWithAnchors;
+    if (this._leafletMap) this.refreshMap();
+
+    const enNums = ['00', '01', '02', '03', '04', '05', '06', '07', '08'];
+    const arNums = ['٠٠', '٠١', '٠٢', '٠٣', '٠٤', '٠٥', '٠٦', '٠٧', '٠٨'];
+    const navNum = (i) => (lang === 'ar' ? arNums : enNums)[i];
+
+    const activeSection = this.state.activeSection;
+    const navRaw = [
+      { id: 's-welcome', icon: 'welcome', no: navNum(0), label: t.navWelcome, href: '#s-welcome' },
+      { id: 's-essentials', icon: 'essentials', no: navNum(1), label: t.navEssentials, href: '#s-essentials' },
+      { id: 's-checklist', icon: 'checklist', no: navNum(2), label: t.navChecklist, href: '#s-checklist' },
+      { id: 's-rules', icon: 'rules', no: navNum(3), label: t.navRules, href: '#s-rules' },
+      { id: 's-tips', icon: 'tips', no: navNum(4), label: t.navTips, href: '#s-tips' },
+      { id: 's-hood', icon: 'hood', no: navNum(5), label: t.navHood, href: '#s-hood' },
+      { id: 's-recs', icon: 'recs', no: navNum(6), label: t.navRecs, href: '#s-recs' },
+      { id: 's-checkout', icon: 'checkout', no: navNum(7), label: t.navCheckout, href: '#s-checkout' },
+      { id: 's-contact', icon: 'contact', no: navNum(8), label: t.navContact, href: '#s-contact' }
+    ];
+    const navItems = navRaw.map((nv) => {
+      const isActive = nv.id === activeSection;
+      const color = isActive ? '#351E1C' : 'rgba(53,30,28,0.55)';
+      return Object.assign({}, nv, {
+        color,
+        iconColor: isActive ? '#FF6037' : 'rgba(53,30,28,0.45)',
+        borderColor: isActive ? '#FF6037' : 'transparent',
+        icon: this.icon(nv.icon, isActive ? '#FF6037' : 'rgba(53,30,28,0.45)')
+      });
+    });
+
+    return {
+      t, d,
+      dir: lang === 'ar' ? 'rtl' : 'ltr',
+      lang,
+      mapNodeRef: (el) => this.setMapNode(el),
+      hasHero: !!d.heroUrl,
+      noHero: !d.heroUrl,
+      heroImg: d.heroUrl ? React.createElement('img', { src: d.heroUrl, alt: '', style: { display: 'block', width: '100%', height: 'clamp(260px, 42vw, 440px)', objectFit: 'cover' } }) : null,
+      qrImg: React.createElement('img', { src: qrUrl, alt: 'WiFi QR', width: 120, height: 120, style: { display: 'block', border: '1px solid rgba(160,201,203,0.35)' } }),
+      calLink,
+      waLink: 'https://wa.me/' + digits,
+      byeTime: d.checkOut + '.',
+      wifiCopyLabel: copied === 'wifi' ? t.copied : t.tapCopy,
+      codeCopyLabel: copied === 'code' ? t.copied : t.tapCopy,
+      wifiJustCopied: justCopied === 'wifi',
+      codeJustCopied: justCopied === 'code',
+      copyWifi: () => this.copy('wifi', d.wifiPass),
+      copyCode: () => this.copy('code', d.doorCode),
+      updatedLabel: d.updatedAt ? (t.updatedPrefix + ' ' + new Date(d.updatedAt).toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' })) : '',
+      tips,
+      rules: t.rules.map((text, i) => ({ n: num(i), text })),
+      checklist: t.checklist.map((text, i) => ({ n: num(i), text })),
+      byeList: t.byeList.map((text, i) => ({ n: num(i), text })),
+      cats: catsWithAnchors,
+      navItems,
+      emergency,
+      showEmergency: this.props.showEmergency ?? true,
+      toggleLang: () => this.setState(s => ({ lang: s.lang === 'ar' ? 'en' : 'ar' })),
+      langBtn: t.langBtn
+    };
+  }
+}
+</script>
+</body>
+</html>
